@@ -4,9 +4,9 @@
 #include <string>
 #include <optional>
 
-
 enum class TokenType {
-	// keywords
+
+	// reserved keywords
 	IF,
 	ELSE,
 	FOR,
@@ -24,7 +24,6 @@ enum class TokenType {
 	PUBLIC,
 	STATIC,
 
-	IMPORT,
 	NEW,
 	DELETE,
 
@@ -81,12 +80,15 @@ enum class TokenType {
 	BLOCK_COMMENT,
 
 	// function related
-	FUNCTION, // a function definition
-	METHOD, // a method inside a class
-	RETURN_TYPE, // return type of a function
+	FUNCTION,         // a function definition
+	METHOD,           // a method inside a class
+	RETURN_TYPE,      // return type of a function
 
-	// end of input
+	//special
+	PRAGMA,
+	IMPORT,
 	_EOF,
+	_SOF,
 
 	// error handling
 	ERROR

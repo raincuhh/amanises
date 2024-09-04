@@ -7,20 +7,23 @@
 
 #include "../utils/tokenTypes.hpp"
 #include "../frontend/lexer.hpp"
+#include "process.hpp"
 
-using amanises::Lexer;
+
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2)
+	using Process = amanises::Process;
+	bool debugMode = false;
+
+	if (argc < 2 && !debugMode)
 	{
 		std::cerr << "Incorrect usage. Correct usage..." << std::endl;
 		std::cerr << argv[0] << " <source.ama>" << std::endl;
 		return EXIT_FAILURE;
 	}
 	
-	
-	// getting cwd 
+	// getting current working directory
 	char buf[256];
 	if (!_getcwd(buf, sizeof(buf)))
 	{
@@ -32,30 +35,21 @@ int main(int argc, char* argv[])
 		std::cout << "Working directory: " << buf << std::endl;
 	}
 
-	// checking if file exists
-	//std::ifstream file(argv[1]);
-	std::ifstream file("../../../tests/unit/testTokenizer.ama");
+	// starting compilation process
+	std::cout << "Amanises compilation starting." << std::endl;
 
-	if (!file.is_open())
+
+	// ensure argv[1] is valid
+	std::unique_ptr<Process> process;
+	try
 	{
-		//std::cerr << "Could not open file: " << argv[1] << std::endl;
+		process = std::make_unique<Process>(argv);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Exception: " << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-
-	std::string contents;
-	{
-		std::stringstream contentsStream;
-		//std::fstream input(argv[1], std::ios::in); //add this in when not debug
-		std::fstream input("../../../tests/unit/testTokenizer.ama", std::ios::in); // remove when debug
-		contentsStream << input.rdbuf();
-		contents = contentsStream.str();
-	}
-
-	// lexing and tokenizing contents
-	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();
-
-	std::vector<Token> tokens = lexer->tokenize(contents);
-
 
 	std::cout << "Amanises compilation finished." << std::endl;
 	return EXIT_SUCCESS;

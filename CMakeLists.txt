@@ -9,7 +9,7 @@ project ("amanises")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable (amanises "src/driver/main.cpp" "src/frontend/lexer.cpp" "src/utils/logger.cpp")
+add_executable (amanises "src/driver/main.cpp" "src/frontend/lexer.cpp" "src/utils/logger.cpp" "src/frontend/ast.cpp" "src/frontend/parser.cpp" "src/utils/helper.cpp" "src/driver/process.cpp" "src/error/error.cpp")
 
 set_target_properties(amanises PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}

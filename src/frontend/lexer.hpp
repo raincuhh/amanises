@@ -5,18 +5,22 @@
 #include <vector>
 
 #include "../utils/tokenTypes.hpp"
+#include "../utils/helper.hpp"
 
 namespace amanises
 {
 	class Lexer
 	{
 	public:
-		void init();
-		std::vector<Token> tokenize(const std::string& str);
+		using Helper = amanises::Helper;
 
-		std::vector<Token> getTokenList();
+		explicit Lexer(std::string source);
+		bool init();
+
+		std::vector<Token> tokenize(const std::string& source);
+		std::vector<Token> getTokenList() const { return mTokenList; };
 	private:
-		std::vector<Token> tokenList;
+		std::vector<Token> mTokenList;
+		const std::string mSource;
 	};
-
 }

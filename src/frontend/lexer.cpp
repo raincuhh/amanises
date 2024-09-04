@@ -1,67 +1,109 @@
 #include "lexer.hpp"
 
-void amanises::Lexer::init()
+amanises::Lexer::Lexer(std::string source) :
+	mSource(std::move(source))
 {
 }
 
-std::vector<Token> amanises::Lexer::tokenize(const std::string& str)
+bool amanises::Lexer::init()
+{
+	mTokenList = tokenize(std::move(mSource));
+	if (mTokenList.empty())
+	{
+		std::cerr << "Error: tokenlist empty after tokenization" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+std::vector<Token> amanises::Lexer::tokenize(const std::string& source)
 {
 	std::vector<Token> tokens;
 	std::string buf;
 
-	for (int idx = 0; idx < str.length(); idx++)
+	for (size_t idx = 0; idx < source.length();)
 	{
-		char c = str.at(idx);
+		char c = source.at(idx);
+
+		if (idx == 0)
+		{
+			tokens.push_back({ .type = TokenType::_SOF });
+		}
 
 		if (std::isalpha(c))
 		{
-			buf.push_back(c);
-			idx++;
-			while (std::isalnum(str.at(idx)))
+			//buf.clear();
+			//buf.push_back(c);
+			//idx++;
+			//while (std::isalnum(source.at(idx)))
+			//{
+			//	buf.push_back(source.at(idx));
+			//	idx++;
+			//}
+			//idx--;
+
+			buf.clear();
+			do
 			{
-				buf.push_back(str.at(idx));
-				idx++;
-			}
-			idx--;
+				buf.push_back(c);
+				++idx;
+				if (idx < source.length())
+				{
+					c = source.at(idx);
+				}
+
+			} while (idx < source.length() && std::isalnum(c));
 
 			if (buf == "return")
 			{ 
 				tokens.push_back({.type = TokenType::RETURN});
 				buf.clear();
-				continue;
 			}
 			else
 			{
-				std::cerr << "you messed up" << std::endl;
+				std::cerr << "you messed up, buf: " << buf << std::endl;
 				exit(EXIT_FAILURE);
 			}
+			continue;
 		}
 
 		else if (std::isdigit(c))
 		{
-			buf.push_back(c);
-			idx++;
+			//buf.push_back(c);
+			//idx++;
+//
+			//while (std::isdigit(source.at(idx)))
+			//{
+			//	buf.push_back(source.at(idx));
+			//	idx++;
+			//}
+			//idx--;
 
-			while (std::isdigit(str.at(idx)))
+			buf.clear();
+			do
 			{
-				buf.push_back(str.at(idx));
-				idx++;
-			}
-			idx--;
+				buf.push_back(c);
+				++idx;
+				if (idx < source.length())
+				{
+					c = source.at(idx);
+				}
+			} while (idx < source.length() && std::isdigit(c));
 
 			tokens.push_back({ .type = TokenType::INTEGER_LIT, .value = buf });
-			buf.clear();
+			//buf.clear();
 			continue;
 		}
 
 		else if (c == ';')
 		{
 			tokens.push_back({ .type = TokenType::SEMICOLON });
+			idx++;
 		}
 
 		else if (std::isspace(c))
 		{
-			continue;
+			idx++;
 		}
 
 		else
@@ -70,11 +112,7 @@ std::vector<Token> amanises::Lexer::tokenize(const std::string& str)
 			exit(EXIT_FAILURE);
 		}
 	}
+	tokens.push_back({ .type = TokenType::_EOF });
 
 	return tokens;
-}
-
-std::vector<Token> amanises::Lexer::getTokenList()
-{
-	return tokenList;
 }
