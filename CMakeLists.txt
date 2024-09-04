@@ -9,7 +9,19 @@ project ("amanises")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable (amanises "src/main.cpp"  "src/lexer.cpp" "src/tokenTypes.h")
+add_executable (amanises "src/driver/main.cpp" "src/frontend/lexer.cpp" "src/utils/logger.cpp")
+
+set_target_properties(amanises PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}
+)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # For static libraries
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # For shared libraries
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})      # For executables
+
+set(CMAKE_OBJECT_PATH ${CMAKE_BINARY_DIR}/out)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET amanises PROPERTY CXX_STANDARD 20)
