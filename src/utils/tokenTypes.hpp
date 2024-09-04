@@ -98,4 +98,5 @@ struct Token
 {
 	TokenType type;
 	std::optional<std::string> value {};
+	std::optional<size_t> value_len;
 };

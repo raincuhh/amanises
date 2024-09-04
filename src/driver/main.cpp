@@ -1,15 +1,8 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <memory>
-#include <direct.h>
 #include <string>
 
-#include "../utils/tokenTypes.hpp"
-#include "../frontend/lexer.hpp"
 #include "process.hpp"
-
-
 
 int main(int argc, char* argv[])
 {
@@ -37,7 +30,6 @@ int main(int argc, char* argv[])
 
 	// starting compilation process
 	std::cout << "Amanises compilation starting." << std::endl;
-
 
 	// ensure argv[1] is valid
 	std::unique_ptr<Process> process;
