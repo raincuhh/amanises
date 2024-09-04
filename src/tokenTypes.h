@@ -1,0 +1,12 @@
+#pragma once
+
+enum class TokenTypes {
+	IDENTIFIER,
+	KEYWORD,
+	SEPERATOR,
+	PUCTUATOR,
+	OPERATOR,
+	LITERAL,
+	COMMENT,
+	WHITESPACE
+};
