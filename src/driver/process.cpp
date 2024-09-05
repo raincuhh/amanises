@@ -1,25 +1,25 @@
 #include "process.hpp"
 
+// TODO: future add compiling multiple source files, currently only does one.
 
-
-amanises::Process::Process(char* argv[])
+amanises::Process::Process(char* argv[], Logger* l) : 
+	mLogger(l)
 {
 	init(argv);
 }
 
 void amanises::Process::init(char* argv[])
 {
-	std::string filepath = argv[1];
+	const char* filepath = argv[1];
 	if (!verifyFilepath(filepath))
 	{
-		std::cerr << "Error: File path verification failed." << std::endl;
+		mLogger->log(LogType::ERROR, std::string("File path verification failed for: ") + filepath);
 		exit(EXIT_FAILURE);
 	}
 
 	std::string content;
 	{
-		//std::fstream input(argv[1], std::ios::in); // release
-		std::fstream input(filepath, std::ios::in);  // debug
+		std::fstream input(filepath, std::ios::in);
 		if (!input)
 		{
 			std::cerr << "Error: Unable to open file " << filepath << std::endl;
@@ -30,18 +30,32 @@ void amanises::Process::init(char* argv[])
 		content = contentStream.str();
 	}
 
-	std::unique_ptr<LexicalAnalyzer> lexer = std::make_unique<LexicalAnalyzer>(std::move(content));
-	if (!lexer->init())
+	// starting lexing process
+	mLogger->log(LogType::INFO, std::string("Lexing tokenization started."));
+
+	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(std::move(content), content.length(), mLogger);
+	content.clear();
+
+	if (!lexer->processContent())
 	{
-		std::cerr << "Error: Lexer initialization failed." << std::endl;
+		mLogger->log(LogType::ERROR, std::string("Failed lexing processing."));
 		exit(EXIT_FAILURE);
 	}
 
-	std::vector<Token> tokens = lexer->getTokenList();
-	lexer->printTokens(tokens);
+	std::vector<Token> tokens = lexer->getFullTokenList();
+	lexer->debugPrintTokens(tokens);
+
+	mLogger->log(LogType::INFO, std::string("Lexing tokenization finished."));
+
+
+	// starting parsing/abstract syntax tree/ast process
+
+	mLogger->log(LogType::INFO, std::string("Ast parsing started."));
+	mLogger->log(LogType::INFO, std::string("Ast parsing finished."));
+
 }
 
-bool amanises::Process::verifyFilepath(std::string& filepath)
+bool amanises::Process::verifyFilepath(const char* filepath)
 {
 	std::fstream file(filepath);
 	if (!file.is_open())

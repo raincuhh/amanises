@@ -6,25 +6,29 @@
 #include <memory>
 #include <direct.h>
 #include <string>
+#include <string_view>
 
-#include "../utils/tokenTypes.hpp"
-#include "../frontend/lexicalAnalyzer.hpp"
+#include "../utils/tokens.hpp"
+#include "../frontend/lexer.hpp"
 #include "../error/error.hpp"
+#include "../utils/logger.hpp"
 
 namespace amanises
 {
 	class Process
 	{
 	public:
-		using LexicalAnalyzer = amanises::LexicalAnalyzer;
+		using Lexer = amanises::Lexer;
+		using Logger = amanises::Logger;
 
-		Process(char* argv[]);
-		void init(char* argv[]);
-
-		bool verifyFilepath(std::string& filepath);
+		Process(char* argv[], Logger* l);
 
 	private:
+		Logger* mLogger;
 
+		void init(char* argv[]);
+
+		bool verifyFilepath(const char* filepath);
 	};
 }
 
