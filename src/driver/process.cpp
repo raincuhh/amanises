@@ -13,7 +13,6 @@ void amanises::Process::init(char* argv[])
 	std::cout <<  argv[1] << std::endl;
 
 	std::string filepath = argv[1];//"../../../tests/unit/testTokenizer.ama"; // argv[1]
-
 	if (!verifyFilepath(filepath))
 	{
 		std::cerr << "Error: File path verification failed." << std::endl;
@@ -29,13 +28,12 @@ void amanises::Process::init(char* argv[])
 			std::cerr << "Error: Unable to open file " << filepath << std::endl;
 		}
 
-
 		std::stringstream contentStream;
 		contentStream << input.rdbuf();
 		content = contentStream.str();
 	}
 
-	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(std::move(content));
+	std::unique_ptr<LexicalAnalyzer> lexer = std::make_unique<LexicalAnalyzer>(std::move(content));
 	
 	if (!lexer->init())
 	{

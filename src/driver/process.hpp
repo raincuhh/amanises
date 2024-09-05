@@ -16,7 +16,7 @@ namespace amanises
 	class Process
 	{
 	public:
-		using Lexer = amanises::Lexer;
+		using LexicalAnalyzer = amanises::LexicalAnalyzer;
 
 		Process(char* argv[]);
 		void init(char* argv[]);

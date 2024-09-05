@@ -80,15 +80,17 @@ enum class TokenType {
 	BLOCK_COMMENT,
 
 	// function related
-	FUNCTION,         // a function definition
-	METHOD,           // a method inside a class
-	RETURN_TYPE,      // return type of a function
+	FUNCTION,         
+	METHOD,      
+	RETURN_TYPE,     
 
-	//special
-	PRAGMA,
-	IMPORT,
+	// start and end of file
 	_EOF,
 	_SOF,
+
+	// preprocessors
+	PRAGMA,
+	IMPORT,
 
 	// error handling
 	ERROR
