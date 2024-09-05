@@ -19,6 +19,7 @@ namespace amanises
 
 		std::vector<Token> tokenize(const std::string& source);
 		std::vector<Token> getTokenList() const { return mTokenList; };
+
 		void printTokens(std::vector<Token>& tokens);
 		std::string getTokenTypeStr(const TokenType token);
 	private:

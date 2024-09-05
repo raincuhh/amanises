@@ -49,3 +49,5 @@ Thumbs.db
 *.swp
 *.bak
 *.orig
+
+log.txt

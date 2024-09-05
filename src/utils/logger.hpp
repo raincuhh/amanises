@@ -25,7 +25,7 @@ namespace amanises
 		Logger(std::string& filepath);
 		~Logger() { if (logFile) logFile.close(); };
 		
-		void log(LogType type, std::string& msg);
+		void log(LogType type, std::string msg);
 
 	private:
 		std::ofstream logFile;

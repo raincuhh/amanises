@@ -17,22 +17,23 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	std::unique_ptr<Logger> logger = std::make_unique<Logger>();
+	std::string logPath = "../../../logs/log.txt";
+	std::unique_ptr<Logger> logger = std::make_unique<Logger>(logPath);
 	
 	// getting current working directory
 	char buf[256];
 	if (!_getcwd(buf, sizeof(buf)))
 	{
-		std::cerr << "Error getting working directory" << std::endl;
+		logger->log(LogType::ERROR, std::string("Failed getting working directory"));
 		return EXIT_FAILURE;
 	}
 	else
 	{
-		std::cout << "Working directory: " << buf << std::endl;
+		logger->log(LogType::INFO, std::string("Working directory ") + buf);
 	}
 
 	// starting compilation process
-	std::cout << "Amanises compilation starting." << std::endl;
+	logger->log(LogType::INFO, std::string("Amanises compilation started."));
 
 	// ensure argv[1] is valid
 	std::unique_ptr<Process> process;
@@ -46,6 +47,6 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	std::cout << "Amanises compilation finished." << std::endl;
+	logger->log(LogType::INFO, std::string("Amanises compilation finished."));
 	return EXIT_SUCCESS;
 }

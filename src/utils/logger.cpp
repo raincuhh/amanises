@@ -9,32 +9,29 @@ amanises::Logger::Logger(std::string& filepath)
 	}
 }
 
-void amanises::Logger::log(LogType type, std::string& msg)
+void amanises::Logger::log(LogType type, std::string msg)
 {
 	std::string timestamp = getLogTimestamp();
 	std::ostringstream entry;
 
-	entry
-		<< "[" << timestamp << "] "
+	entry << "[" << timestamp << "] "
 		<< logTypeToStr(type) << ": "
-		<< msg
-		<< std::endl;
-			
+		<< msg;
+
 	std::cout << entry.str() << std::endl;
 
 	if (logFile.is_open())
 	{
 		logFile << entry.str();
 		logFile
-			.flush();
+			.flush(); 
 	}
 }
 
 std::string amanises::Logger::getLogTimestamp()
 {
 	time_t now = time(0);
-	struct tm* localTime = localtime(&now);
-	//char* dateTime = asctime(localTime);
+	tm* localTime = localtime(&now);
 
 	char timestamp[20];
 	strftime(timestamp, sizeof(timestamp),
