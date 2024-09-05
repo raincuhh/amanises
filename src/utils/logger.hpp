@@ -6,14 +6,14 @@
 #include <sstream>
 #include <ctime> 
 
-
 enum class LogType
 {
 	DEBUG, 
 	INFO, 
 	WARNING, 
 	ERROR, 
-	CRITICAL
+	CRITICAL,
+	EXCEPTION
 };
 
 
@@ -26,9 +26,11 @@ namespace amanises
 		~Logger() { if (logFile) logFile.close(); };
 		
 		void log(LogType type, std::string msg);
+		bool clearLogs();
 
 	private:
 		std::ofstream logFile;
+		std::string mLogFilepath;
 
 		std::string getLogTimestamp();
 

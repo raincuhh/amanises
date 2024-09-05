@@ -9,10 +9,7 @@ amanises::Process::Process(char* argv[])
 
 void amanises::Process::init(char* argv[])
 {
-	//std::ifstream file(argv[1]);
-	std::cout <<  argv[1] << std::endl;
-
-	std::string filepath = argv[1];//"../../../tests/unit/testTokenizer.ama"; // argv[1]
+	std::string filepath = argv[1];
 	if (!verifyFilepath(filepath))
 	{
 		std::cerr << "Error: File path verification failed." << std::endl;
@@ -34,7 +31,6 @@ void amanises::Process::init(char* argv[])
 	}
 
 	std::unique_ptr<LexicalAnalyzer> lexer = std::make_unique<LexicalAnalyzer>(std::move(content));
-	
 	if (!lexer->init())
 	{
 		std::cerr << "Error: Lexer initialization failed." << std::endl;
@@ -42,7 +38,6 @@ void amanises::Process::init(char* argv[])
 	}
 
 	std::vector<Token> tokens = lexer->getTokenList();
-
 	lexer->printTokens(tokens);
 }
 

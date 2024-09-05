@@ -8,7 +8,7 @@
 #include <string>
 
 #include "../utils/tokenTypes.hpp"
-#include "../frontend/lexer.hpp"
+#include "../frontend/lexicalAnalyzer.hpp"
 #include "../error/error.hpp"
 
 namespace amanises

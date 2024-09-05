@@ -66,8 +66,10 @@ enum class TokenType {
 	OPEN_BRACKET,     // [
 	CLOSE_BRACKET,    // ]
 
-	// identifier and literals
+	// identifier
 	IDENTIFIER,       
+
+	// literals
 	INTEGER_LIT,
 	FLOAT_LIT,
 	CHAR_LIT,
@@ -90,7 +92,7 @@ enum class TokenType {
 
 	// preprocessors
 	PRAGMA,
-	IMPORT,
+	INCLUDE,
 
 	// error handling
 	ERROR

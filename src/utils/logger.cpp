@@ -1,11 +1,12 @@
 #include "logger.hpp"
 
-amanises::Logger::Logger(std::string& filepath)
+amanises::Logger::Logger(std::string& filepath) :
+	mLogFilepath(filepath)
 {
 	logFile.open(filepath, std::ios::app);
 	if (!logFile.is_open())
 	{
-		std::cerr << "Error: Failed opening logfile." << std::endl;
+		log(LogType::ERROR, std::string("Failed opening logfile") + filepath);
 	}
 }
 
@@ -14,7 +15,8 @@ void amanises::Logger::log(LogType type, std::string msg)
 	std::string timestamp = getLogTimestamp();
 	std::ostringstream entry;
 
-	entry << "[" << timestamp << "] "
+	entry 
+		<< "[" << timestamp << "] "
 		<< logTypeToStr(type) << ": "
 		<< msg;
 
@@ -22,10 +24,20 @@ void amanises::Logger::log(LogType type, std::string msg)
 
 	if (logFile.is_open())
 	{
+		entry
+			<< std::endl;
 		logFile << entry.str();
-		logFile
-			.flush(); 
+		logFile.flush();
 	}
+}
+
+bool amanises::Logger::clearLogs()
+{
+	if (remove(mLogFilepath.c_str()))
+	{
+		return true;
+	}
+	return false;
 }
 
 std::string amanises::Logger::getLogTimestamp()
@@ -34,8 +46,7 @@ std::string amanises::Logger::getLogTimestamp()
 	tm* localTime = localtime(&now);
 
 	char timestamp[20];
-	strftime(timestamp, sizeof(timestamp),
-		"%Y-%m-%d %H:%M:%S", localTime);
+	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localTime);
 
 	return static_cast<std::string>(timestamp);
 }

@@ -1,4 +1,4 @@
-#include "lexer.hpp"
+#include "lexicalAnalyzer.hpp" 
 
 amanises::LexicalAnalyzer::LexicalAnalyzer(std::string source) :
 	mSource(std::move(source))
@@ -175,8 +175,10 @@ std::string amanises::LexicalAnalyzer::getTokenTypeStr(const TokenType type)
 	case TokenType::OPEN_BRACKET:  return "OPEN_BRACKET";
 	case TokenType::CLOSE_BRACKET: return "CLOSE_BRACKET";
 
-	// identifier and literals
+	// identifier
 	case TokenType::IDENTIFIER:    return "IDENTIFIER";
+
+	// literals
 	case TokenType::INTEGER_LIT:   return "INTEGER_LIT";
 	case TokenType::FLOAT_LIT:     return "FLOAT_LIT";
 	case TokenType::CHAR_LIT:      return "CHAR_LIT";
@@ -199,12 +201,11 @@ std::string amanises::LexicalAnalyzer::getTokenTypeStr(const TokenType type)
 
 	// preprocessors
 	case TokenType::PRAGMA:        return "PRAGMA";
-	case TokenType::IMPORT:        return "IMPORT";
+	case TokenType::INCLUDE:       return "INCLUDE";
 
 	// error handling
 	case TokenType::ERROR:         return "ERROR";
 
-	default:
-		return "UNDEFINED";
+	default:                       return "UNDEFINED";
 	}
 }
