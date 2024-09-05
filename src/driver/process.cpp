@@ -42,6 +42,8 @@ void amanises::Process::init(char* argv[])
 	}
 
 	std::vector<Token> tokens = lexer->getTokenList();
+
+	lexer->printTokens(tokens);
 }
 
 bool amanises::Process::verifyFilepath(std::string& filepath)

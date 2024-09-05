@@ -12,7 +12,7 @@ cmake_install.cmake
 Makefile
 *.cmake
 CMakeLists.txt.user
-!launch.vs.json
+#!launch.vs.json
 
 # Visual Studio specific files
 *.suo
