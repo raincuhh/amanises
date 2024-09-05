@@ -49,7 +49,6 @@ void amanises::Process::init(char* argv[])
 
 
 	// starting parsing/abstract syntax tree/ast process
-
 	mLogger->log(LogType::INFO, std::string("Ast parsing started."));
 	mLogger->log(LogType::INFO, std::string("Ast parsing finished."));
 

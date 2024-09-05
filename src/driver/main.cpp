@@ -9,7 +9,8 @@ int main(int argc, char* argv[])
 {
 	using Process = amanises::Process;
 	using Logger = amanises::Logger;
-
+	
+	// checking for invalid use
 	if (argc < 2)
 	{
 		std::cerr << "Incorrect usage. Correct usage..." << std::endl;

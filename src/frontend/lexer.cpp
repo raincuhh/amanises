@@ -15,18 +15,19 @@ bool amanises::Lexer::processContent()
 {
 	// preprocess the content
 
-	// TODO: make whitespace exception rules, stuff like <int<typeshi> >, 
-	// and some other cases, might just move this to the tokenizer if it becomes annoying
+	// TODO: make whitespace exception rules, stuff like <int<typeshi> >, and some other 
+	// cases, might just move this to the tokenizer if it becomes annoying
+	// this is highly experimental, might change in the future probably.
 	
-	mContent = trimWhite(mContent);
+	//mContent = trimWhite(mContent);
+	//std::cout << mContent << std::endl;
 
-	std::cout << mContent << std::endl;
-
-	// split up source into different buffers/chunks for tokenization
 	// TODO: make a more advanced content splitter.
+	// splits up source into chunks for tokenization
+	std::vector<std::string> contentChunks;
+	contentChunks = splitIntoChunks(mContent, 8000);
 
 	std::vector<Token> bufTokList;
-	std::string line;
 
 
 	return true;
@@ -67,6 +68,31 @@ std::string amanises::Lexer::trimWhite(std::string& content)
 		return std::isspace(c);
 		}), content.end());
 	return content;
+}
+
+std::vector<std::string> amanises::Lexer::splitIntoChunks(const std::string& content, size_t maxChunkSize)
+{
+	// TODO: edgecases to solve:
+	// tracking syntax boundaries. as in open and closed delimiters.
+	// tokenization marks is a kinda todo
+
+	std::vector<std::string> chunks;
+	size_t contentSize = content.size();
+	size_t start = 0;
+
+	while (start < contentSize) {
+
+		size_t end = std::min(start + maxChunkSize, contentSize);
+
+		// ensure we do not split within a string literal or comment
+		while (end < contentSize && !isBoundaryCharacter(content[end])) {
+			++end;
+		}
+
+		chunks.push_back(content.substr(start, end - start));
+		start = end;
+	}
+	return chunks;
 }
 
 std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
@@ -170,6 +196,12 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 bool amanises::Lexer::tokenValueIsNotEmpty(const Token& token)
 {
 	return token.text != nullptr && token.text[0] != '\0';
+}
+
+bool amanises::Lexer::isBoundaryCharacter(char c)
+{
+	// TODO: more boundary characters to be added
+	return c == '\n' || c == '}' || c == '{' || c == ';';
 }
 
 

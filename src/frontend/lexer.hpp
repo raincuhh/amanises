@@ -40,7 +40,9 @@ namespace amanises
 
 		std::vector<Token> tokenize(std::string_view content);
 		std::string trimWhite(std::string& content);
+		std::vector<std::string> splitIntoChunks(const std::string& content, size_t maxChunkSize);
 		std::string getTokenTypeStr(const TokenType type);
 		bool tokenValueIsNotEmpty(const Token& token);
+		bool isBoundaryCharacter(char c);
 	};
 }
