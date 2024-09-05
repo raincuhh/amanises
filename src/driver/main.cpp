@@ -3,18 +3,21 @@
 #include <string>
 
 #include "process.hpp"
+#include "../utils/logger.hpp"
 
 int main(int argc, char* argv[])
 {
 	using Process = amanises::Process;
-	bool debugMode = false;
+	using Logger = amanises::Logger;
 
-	if (argc < 2 && !debugMode)
+	if (argc < 2)
 	{
 		std::cerr << "Incorrect usage. Correct usage..." << std::endl;
 		std::cerr << argv[0] << " <source.ama>" << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	std::unique_ptr<Logger> logger = std::make_unique<Logger>();
 	
 	// getting current working directory
 	char buf[256];

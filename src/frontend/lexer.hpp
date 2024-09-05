@@ -5,14 +5,14 @@
 #include <vector>
 
 #include "../utils/tokenTypes.hpp"
-#include "../utils/helper.hpp"
+#include "../utils/utils.hpp"
 
 namespace amanises
 {
 	class LexicalAnalyzer
 	{
 	public:
-		using Helper = amanises::Helper;
+		using Utils = amanises::Utils;
 
 		explicit LexicalAnalyzer(std::string source);
 		bool init();

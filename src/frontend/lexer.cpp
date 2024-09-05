@@ -21,27 +21,14 @@ std::vector<Token> amanises::LexicalAnalyzer::tokenize(const std::string& source
 	std::vector<Token> tokens;
 	std::string buf;
 
+	tokens.push_back({ .type = TokenType::_SOF });
+
 	for (size_t idx = 0; idx < source.length();)
 	{
 		char c = source.at(idx);
 
-		if (idx == 0)
+		if (std::isalpha(c)/*Utils::isAlpha(c)*/)
 		{
-			tokens.push_back({ .type = TokenType::_SOF });
-		}
-
-		if (std::isalpha(c))
-		{
-			//buf.clear();
-			//buf.push_back(c);
-			//idx++;
-			//while (std::isalnum(source.at(idx)))
-			//{
-			//	buf.push_back(source.at(idx));
-			//	idx++;
-			//}
-			//idx--;
-
 			buf.clear();
 			do
 			{
@@ -69,16 +56,6 @@ std::vector<Token> amanises::LexicalAnalyzer::tokenize(const std::string& source
 
 		else if (std::isdigit(c))
 		{
-			//buf.push_back(c);
-			//idx++;
-//
-			//while (std::isdigit(source.at(idx)))
-			//{
-			//	buf.push_back(source.at(idx));
-			//	idx++;
-			//}
-			//idx--;
-
 			buf.clear();
 			do
 			{
