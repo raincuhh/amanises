@@ -1,2 +1,2 @@
 # Amanises
-a programming language made in c++
+a custom programming language made in c++
