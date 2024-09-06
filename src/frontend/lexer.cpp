@@ -1,34 +1,45 @@
 #include "lexer.hpp"
 
-amanises::Lexer::Lexer(std::string content, size_t contentLen, Logger* logger) :
-	mLogger(logger),
-	mContent(std::move(content)),
-	mContentLen(contentLen),
+amanises::Lexer::Lexer(std::string _content, size_t _contentLen, Logger* _logger) :
+	logger(_logger),
+	content(std::move(_content)),
+	contentLen(_contentLen),
 	cursor(),
 	line(),
 	col(),
-	mFullTokenList()
+	fullTokenList()
 {
 }
 
 bool amanises::Lexer::processContent()
 {
-	// preprocess the content
-
-	// TODO: make whitespace exception rules, stuff like <int<typeshi> >, and some other 
-	// cases, might just move this to the tokenizer if it becomes annoying
-	// this is highly experimental, might change in the future probably.
+	// preprocess the content; note: experimental really
 	
 	//mContent = trimWhite(mContent);
 	//std::cout << mContent << std::endl;
 
 	// TODO: make a more advanced content splitter.
 	// splits up source into chunks for tokenization
-	std::vector<std::string> contentChunks;
-	contentChunks = splitIntoChunks(mContent, 8000);
+	const size_t BUFFER_SIZE = 8192;
+	std::vector<std::string> contentBuffers = splitToBuffers(content, BUFFER_SIZE);
 
-	std::vector<Token> bufTokList;
+	// loop over each buffer to tokenize
+	for (std::string& buf : contentBuffers)
+	{
+		// tokenize to a buffer token list
+		std::vector<Token> bufTokenList;
+		tokenize(buf, bufTokenList);
 
+		// reserve and move the buffer token list to the back of full token list 
+		fullTokenList.reserve(fullTokenList.size() + bufTokenList.size());
+		std::move(bufTokenList.begin(), bufTokenList.end(), std::back_inserter(fullTokenList));
+	}
+
+	// check if the full token list is still empty after tokenization, (should atleast have a EOF token is why)
+	if (fullTokenList.empty())
+	{
+		logger->log(LogType::WARNING, "");
+	}
 
 	return true;
 }
@@ -52,12 +63,9 @@ void amanises::Lexer::debugPrintTokens(std::vector<Token>& tokens)
 	}
 }
 
-std::vector<Token> amanises::Lexer::tokenize(std::string_view content)
+void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tokenList)
 {
-	std::vector<Token> tokList;
-
-
-	return tokList;
+	
 }
 
 std::string amanises::Lexer::trimWhite(std::string& content)
@@ -70,11 +78,11 @@ std::string amanises::Lexer::trimWhite(std::string& content)
 	return content;
 }
 
-std::vector<std::string> amanises::Lexer::splitIntoChunks(const std::string& content, size_t maxChunkSize)
+std::vector<std::string> amanises::Lexer::splitToBuffers(const std::string& content, size_t maxChunkSize)
 {
 	// TODO: edgecases to solve:
 	// tracking syntax boundaries. as in open and closed delimiters.
-	// tokenization marks is a kinda todo
+	// tokenization marks kinda
 
 	std::vector<std::string> chunks;
 	size_t contentSize = content.size();
@@ -85,13 +93,17 @@ std::vector<std::string> amanises::Lexer::splitIntoChunks(const std::string& con
 		size_t end = std::min(start + maxChunkSize, contentSize);
 
 		// ensure we do not split within a string literal or comment
-		while (end < contentSize && !isBoundaryCharacter(content[end])) {
+		while (end < contentSize && !Utils::isBoundaryCharacter(content[end])) {
 			++end;
 		}
-
+		std::cout << "soc" << std::endl;
 		chunks.push_back(content.substr(start, end - start));
+		std::cout << content.substr(start, end - start) << std::endl;
+
+		std::cout << "eoc" << std::endl;
 		start = end;
 	}
+
 	return chunks;
 }
 

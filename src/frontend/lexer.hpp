@@ -19,28 +19,28 @@ namespace amanises
 		using Utils = amanises::Utils;
 		using Logger = amanises::Logger;
 
-		explicit Lexer(std::string content, size_t contentLen, Logger* logger);
+		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
 
 		bool processContent();
 
 		void debugPrintTokens(std::vector<Token>& tokens);
-		std::vector<Token> getFullTokenList() const { return std::move(mFullTokenList); };
+		std::vector<Token> getFullTokenList() const { return std::move(fullTokenList); };
 	private:
-		Logger* mLogger;
+		Logger* logger;
 
-		std::string mContent;
+		std::string content;
 		//std::string_view mContentView;
 		
-		size_t mContentLen;
+		size_t contentLen;
 		size_t cursor;
 		size_t line;
 		size_t col;
 
-		std::vector<Token> mFullTokenList;
+		std::vector<Token> fullTokenList;
 
-		std::vector<Token> tokenize(std::string_view content);
+		void tokenize(std::string_view content, std::vector<Token>& tokenList);
 		std::string trimWhite(std::string& content);
-		std::vector<std::string> splitIntoChunks(const std::string& content, size_t maxChunkSize);
+		std::vector<std::string> splitToBuffers(const std::string& content, size_t maxChunkSize);
 		std::string getTokenTypeStr(const TokenType type);
 		bool tokenValueIsNotEmpty(const Token& token);
 		bool isBoundaryCharacter(char c);

@@ -22,3 +22,12 @@ inline bool amanises::Utils::isWhitespace(char c)
 		c == '\v' || c == '\b' || c == '\r'
 	);
 }
+
+// checking if the char is in a string literal, or chunk of code
+//{};
+//();
+bool amanises::Utils::isBoundaryCharacter(char c)
+{
+	// TODO: more boundary characters to be added
+	return c == '\n' || c == '}' || c == '{' || c == ';';
+}
