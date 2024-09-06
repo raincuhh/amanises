@@ -62,5 +62,8 @@ namespace amanises
 		void initTokMap();
 
 		std::unordered_map<std::string, TokenType> tokMap;
+
+		//checks for different cases
+
 	};
 }

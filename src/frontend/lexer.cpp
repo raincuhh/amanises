@@ -19,8 +19,8 @@ bool amanises::Lexer::lexContent()
 	
 	// splits up source into chunks for tokenization
 	// TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
-	const size_t BUFFER_SIZE = 8192;
-	std::vector<std::string> contentBuffers = splitToBuffers(content, BUFFER_SIZE);
+	const size_t bufSize = 8192;
+	std::vector<std::string> contentBuffers = splitToBuffers(content, bufSize);
 
 	for (const std::string& buf : contentBuffers)
 	{

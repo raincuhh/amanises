@@ -42,6 +42,7 @@ void amanises::Process::init(char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	// get tokens after lexer has finished tokenizing
 	std::vector<Token> tokens = lexer->getFullTokenList();
 	lexer->debugPrintTokens(tokens);
 
