@@ -10,7 +10,7 @@ amanises::Process::Process(char* argv[], Logger* l) :
 
 void amanises::Process::init(char* argv[])
 {
-	const char* filepath = argv[1];
+	const char* filepath = argv[1]; // for now its just argv[1] but eventually it will go through all files inputted
 	if (!verifyFilepath(filepath))
 	{
 		mLogger->log(LogType::ERROR, std::string("File path verification failed for: ") + filepath);
@@ -36,7 +36,7 @@ void amanises::Process::init(char* argv[])
 	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(std::move(content), content.length(), mLogger);
 	content.clear();
 
-	if (!lexer->processContent())
+	if (!lexer->lexContent())
 	{
 		mLogger->log(LogType::ERROR, std::string("Failed lexing processing."));
 		exit(EXIT_FAILURE);

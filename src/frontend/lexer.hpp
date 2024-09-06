@@ -20,9 +20,24 @@ namespace amanises
 		using Utils = amanises::Utils;
 		using Logger = amanises::Logger;
 
+		enum class LexStates
+		{
+			LEX_ST_INITIAL = 0,
+			LEX_ST_PREPROCCESOR,
+			LEX_ST_COMMENTS,
+			LEX_ST_KEYWORD,
+			LEX_ST_DATA_TYPES,
+			LEX_ST_OPERATOR,
+			LEX_ST_PUNCTUATION,
+			LEX_ST_IDENTIFIER,
+			LEX_ST_LITERALS,
+			LEX_ST_ERROR
+			// might add states for stuff like preprocessor conditionals, etc.
+		};
+
 		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
 
-		bool processContent();
+		bool lexContent();
 
 		void debugPrintTokens(std::vector<Token>& tokens);
 		std::vector<Token> getFullTokenList() const { return std::move(fullTokenList); };

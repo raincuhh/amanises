@@ -105,14 +105,3 @@ struct Token
 	size_t line;
 	size_t col;
 };
-
-
-
-/*
-struct Token
-{
-	TokenType type;
-	std::optional<std::string> value{};
-	std::optional<size_t> value_len;
-};
-*/

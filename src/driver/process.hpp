@@ -27,6 +27,7 @@ namespace amanises
 		Logger* mLogger;
 
 		void init(char* argv[]);
+
 		bool verifyFilepath(const char* filepath);
 	};
 }

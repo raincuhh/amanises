@@ -13,7 +13,7 @@ amanises::Lexer::Lexer(std::string _content, size_t _contentLen, Logger* _logger
 	initTokMap();
 }
 
-bool amanises::Lexer::processContent()
+bool amanises::Lexer::lexContent()
 {
 	// preprocess
 	
@@ -64,7 +64,19 @@ void amanises::Lexer::debugPrintTokens(std::vector<Token>& tokens)
 
 void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tokenList)
 {
-	
+	LexStates state = LexStates::LEX_ST_INITIAL;
+	std::string buf;
+
+	for (size_t i = 0; i < content.length();)
+	{
+		char c = content.at(i);
+
+		switch (c)
+		{
+		case LexStates::LEX_ST_INITIAL: 
+			std::cout << "st" << std::endl;
+		}
+	}
 }
 
 std::string amanises::Lexer::trimWhite(std::string& content)
@@ -267,16 +279,13 @@ void amanises::Lexer::initTokMap()
 		{ "bool", TokenType::TOK_BOOL },
 		{ "void", TokenType::TOK_VOID },
 
-		// Preprocessors
+		// preprocessors
 		{ "#pragma", TokenType::TOK_PRAGMA },
 		{ "#include", TokenType::TOK_INCLUDE },
 
-		// literals (other literals handled by tokenization matching)
-		{ "true", TokenType::TOK_BOOLEAN_LIT },
-		{ "false", TokenType::TOK_BOOLEAN_LIT },
-		{ "null", TokenType::TOK_NULL_LIT },
+		// literals are handled by the lexer when it comes to that point
 
-		//
+		// err
 		{ "error", TokenType::TOK_ERROR},
 
 	};
