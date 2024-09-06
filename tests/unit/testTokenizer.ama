@@ -1,26 +1,6 @@
-return 20;
-return 420;
-type shi;
-well(type, shi);
-string t = "well well well";
-return 420;
-return 69;
-return 59;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
-return 420;
+#include "testLib.h"
+
+int main() {
+	print("Hello World!");
+	return 0;
+}

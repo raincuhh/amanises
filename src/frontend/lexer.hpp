@@ -23,7 +23,7 @@ namespace amanises
 		enum class LexStates
 		{
 			LEX_ST_INITIAL = 0,
-			LEX_ST_PREPROCCESOR,
+			LEX_ST_PREPROC,
 			LEX_ST_COMMENTS,
 			LEX_ST_KEYWORD,
 			LEX_ST_DATA_TYPES,

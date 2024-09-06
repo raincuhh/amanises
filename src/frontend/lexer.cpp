@@ -59,6 +59,7 @@ void amanises::Lexer::debugPrintTokens(std::vector<Token>& tokens)
 		{
 			std::cout << "nulloptr";
 		}
+		std::cout << ")" << std::endl;
 	}
 }
 
@@ -67,16 +68,64 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	LexStates state = LexStates::LEX_ST_INITIAL;
 	std::string buf;
 
+	std::cout << content << std::endl;
+
 	for (size_t i = 0; i < content.length();)
 	{
-		char c = content.at(i);
+		char c = content[i];
+		//std::cout << c << std::endl;
 
-		switch (c)
+		i++;
+
+		switch (state)
 		{
 		case LexStates::LEX_ST_INITIAL: 
-			std::cout << "st" << std::endl;
+			/*
+			TODO:
+			check for whitespace
+			check for preproc
+			check for comments
+			check for keyword
+			check for data types
+			check for operator
+			check for punctuator
+			check for identifiers
+			check for literals
+			*/
+			
+			break;
+		case LexStates::LEX_ST_PREPROC: 
+			
+			break;
+		case LexStates::LEX_ST_COMMENTS:
+			
+			break;
+		case LexStates::LEX_ST_KEYWORD:
+
+			break;
+		case LexStates::LEX_ST_DATA_TYPES:
+
+			break;
+		case LexStates::LEX_ST_OPERATOR:
+
+			break;
+		case LexStates::LEX_ST_PUNCTUATION:
+
+			break;
+
+		case LexStates::LEX_ST_IDENTIFIER:
+
+			break;
+		case LexStates::LEX_ST_LITERALS:
+
+			break;
+		default:
+
+			break;
 		}
 	}
+
+	tokenList.push_back(Token{ .type = TokenType::TOK_EOF });
 }
 
 std::string amanises::Lexer::trimWhite(std::string& content)
@@ -108,10 +157,12 @@ std::vector<std::string> amanises::Lexer::splitToBuffers(const std::string& cont
 			++end;
 		}
 
-		//std::cout << "soc" << std::endl; // testing
-		chunks.push_back(content.substr(start, end - start));
-		std::cout << content.substr(start, end - start) << std::endl; // testing
-		//std::cout << "eoc" << std::endl; // testing
+		// get the chunk
+		std::string chunk = content.substr(start, end - start);
+		chunks.push_back(chunk);
+
+		// debug, printing out chunk size
+		std::cout << "chunkSize: " << contentSize << std::endl;
 
 		start = end;
 	}
@@ -283,10 +334,9 @@ void amanises::Lexer::initTokMap()
 		{ "#pragma", TokenType::TOK_PRAGMA },
 		{ "#include", TokenType::TOK_INCLUDE },
 
-		// literals are handled by the lexer when it comes to that point
+		// literals  are handled by the lexer when it comes to that point
 
-		// err
-		{ "error", TokenType::TOK_ERROR},
+		// errors    are handled by the lexer when it comes to that point
 
 	};
 }
