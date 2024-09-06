@@ -101,8 +101,9 @@ enum class TokenType {
 struct Token
 {
 	TokenType type;
-	const char* text;
-	size_t textLen;
+	std::optional<std::string> val;
+	size_t line;
+	size_t col;
 };
 
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <unordered_map>
 
 #include "../utils/tokens.hpp"
 #include "../utils/utils.hpp"
@@ -42,7 +43,9 @@ namespace amanises
 		std::string trimWhite(std::string& content);
 		std::vector<std::string> splitToBuffers(const std::string& content, size_t maxChunkSize);
 		std::string getTokenTypeStr(const TokenType type);
-		bool tokenValueIsNotEmpty(const Token& token);
-		bool isBoundaryCharacter(char c);
+
+		void initTokMap();
+
+		std::unordered_map<std::string, TokenType> tokMap;
 	};
 }

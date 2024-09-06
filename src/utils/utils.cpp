@@ -23,11 +23,10 @@ inline bool amanises::Utils::isWhitespace(char c)
 	);
 }
 
-// checking if the char is in a string literal, or chunk of code
-//{};
-//();
 bool amanises::Utils::isBoundaryCharacter(char c)
 {
-	// TODO: more boundary characters to be added
+	// what this is checking is basically if the character that the splitter splits on, 
+	// is a boundary character. if it is not a boundary character, 
+	// then it continues until it finds a boundary character.
 	return c == '\n' || c == '}' || c == '{' || c == ';';
 }

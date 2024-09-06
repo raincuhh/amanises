@@ -7,24 +7,22 @@ amanises::Lexer::Lexer(std::string _content, size_t _contentLen, Logger* _logger
 	cursor(),
 	line(),
 	col(),
-	fullTokenList()
+	fullTokenList(),
+	tokMap()
 {
+	initTokMap();
 }
 
 bool amanises::Lexer::processContent()
 {
-	// preprocess the content; note: experimental really
+	// preprocess
 	
-	//mContent = trimWhite(mContent);
-	//std::cout << mContent << std::endl;
-
-	// TODO: make a more advanced content splitter.
 	// splits up source into chunks for tokenization
+	// TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
 	const size_t BUFFER_SIZE = 8192;
 	std::vector<std::string> contentBuffers = splitToBuffers(content, BUFFER_SIZE);
 
-	// loop over each buffer to tokenize
-	for (std::string& buf : contentBuffers)
+	for (const std::string& buf : contentBuffers)
 	{
 		// tokenize to a buffer token list
 		std::vector<Token> bufTokenList;
@@ -38,7 +36,8 @@ bool amanises::Lexer::processContent()
 	// check if the full token list is still empty after tokenization, (should atleast have a EOF token is why)
 	if (fullTokenList.empty())
 	{
-		logger->log(LogType::WARNING, "");
+		logger->log(LogType::ERROR, "Full token list empty after tokenization.");
+		return false;
 	}
 
 	return true;
@@ -52,9 +51,9 @@ void amanises::Lexer::debugPrintTokens(std::vector<Token>& tokens)
 	{
 		std::cout << "token (type: " << getTokenTypeStr(token.type) << ", value: ";
 
-		if (tokenValueIsNotEmpty(token))
+		if (token.val)
 		{
-			std::cout << token.text;
+			std::cout << token.val.value();
 		}
 		else
 		{
@@ -92,18 +91,18 @@ std::vector<std::string> amanises::Lexer::splitToBuffers(const std::string& cont
 
 		size_t end = std::min(start + maxChunkSize, contentSize);
 
-		// ensure we do not split within a string literal or comment
+		// ensure we only split on a boundary character
 		while (end < contentSize && !Utils::isBoundaryCharacter(content[end])) {
 			++end;
 		}
-		std::cout << "soc" << std::endl;
-		chunks.push_back(content.substr(start, end - start));
-		std::cout << content.substr(start, end - start) << std::endl;
 
-		std::cout << "eoc" << std::endl;
+		//std::cout << "soc" << std::endl; // testing
+		chunks.push_back(content.substr(start, end - start));
+		std::cout << content.substr(start, end - start) << std::endl; // testing
+		//std::cout << "eoc" << std::endl; // testing
+
 		start = end;
 	}
-
 	return chunks;
 }
 
@@ -111,7 +110,7 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 {
 	switch (type)
 	{
-		// reserved keywords
+	// reserved keywords
 	case TokenType::TOK_IF:            return "IF";
 	case TokenType::TOK_ELSE:          return "ELSE";
 	case TokenType::TOK_FOR:           return "FOR";
@@ -132,7 +131,7 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 	case TokenType::TOK_NEW:           return "NEW";
 	case TokenType::TOK_DELETE:        return "DELETE";
 
-		// data types
+	// data types
 	case TokenType::TOK_INT:           return "INT";
 	case TokenType::TOK_FLOAT:         return "FLOAT";
 	case TokenType::TOK_DOUBLE:        return "DOUBLE";
@@ -141,7 +140,7 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 	case TokenType::TOK_BOOL:          return "BOOL";
 	case TokenType::TOK_VOID:          return "VOID";
 
-		// operators
+	// operators
 	case TokenType::TOK_PLUS:          return "PLUS";
 	case TokenType::TOK_MINUS:         return "MINUS";
 	case TokenType::TOK_MULTIPLY:      return "MULTIPLY";
@@ -159,7 +158,7 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 	case TokenType::TOK_INCREMENT:     return "INCREMENT";
 	case TokenType::TOK_DECREMENT:     return "DECREMENT";
 
-		// punctuation
+	// punctuation
 	case TokenType::TOK_SEMICOLON:     return "SEMICOLON";
 	case TokenType::TOK_COLON:         return "COLON";
 	case TokenType::TOK_DOT:           return "DOT";
@@ -171,10 +170,10 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 	case TokenType::TOK_OPEN_BRACKET:  return "OPEN_BRACKET";
 	case TokenType::TOK_CLOSE_BRACKET: return "CLOSE_BRACKET";
 
-		// identifier
+	// identifier
 	case TokenType::TOK_IDENTIFIER:    return "IDENTIFIER";
 
-		// literals
+	// literals
 	case TokenType::TOK_INTEGER_LIT:   return "INTEGER_LIT";
 	case TokenType::TOK_FLOAT_LIT:     return "FLOAT_LIT";
 	case TokenType::TOK_CHAR_LIT:      return "CHAR_LIT";
@@ -182,38 +181,105 @@ std::string amanises::Lexer::getTokenTypeStr(const TokenType type)
 	case TokenType::TOK_BOOLEAN_LIT:   return "BOOLEAN_LIT";
 	case TokenType::TOK_NULL_LIT:      return "NULL_LIT";
 
-		// comments
+	// comments
 	case TokenType::TOK_LINE_COMMENT:  return "LINE_COMMENT";
 	case TokenType::TOK_BLOCK_COMMENT: return "BLOCK_COMMENT";
 
-		// function related
+	// function related
 	case TokenType::TOK_FUNCTION:      return "FUNCTION";
 	case TokenType::TOK_METHOD:        return "METHOD";
 	case TokenType::TOK_RETURN_TYPE:   return "RETURN_TYPE";
 
-		// start and end of file
+	// start and end of file
 	case TokenType::TOK_EOF:           return "_EOF";
 	case TokenType::TOK_SOF:           return "_SOF";
 
-		// preprocessors
+	// preprocessors
 	case TokenType::TOK_PRAGMA:        return "PRAGMA";
 	case TokenType::TOK_INCLUDE:       return "INCLUDE";
 
-		// error handling
+	// error handling
 	case TokenType::TOK_ERROR:         return "ERROR";
 	default:                           return "UNDEFINED";
 	}
 }
 
-bool amanises::Lexer::tokenValueIsNotEmpty(const Token& token)
+void amanises::Lexer::initTokMap()
 {
-	return token.text != nullptr && token.text[0] != '\0';
-}
+	tokMap = {
+		// punctuation
+		{ ";", TokenType::TOK_SEMICOLON },
+		{ ":", TokenType::TOK_COLON },
+		{ ".", TokenType::TOK_DOT },
+		{ ",", TokenType::TOK_COMMA },
+		{ "(", TokenType::TOK_OPEN_PAR },
+		{ ")", TokenType::TOK_CLOSE_PAR },
+		{ "{", TokenType::TOK_OPEN_BRACE },
+		{ "}", TokenType::TOK_CLOSE_BRACE },
+		{ "[", TokenType::TOK_OPEN_BRACKET },
+		{ "]", TokenType::TOK_CLOSE_BRACKET },
 
-bool amanises::Lexer::isBoundaryCharacter(char c)
-{
-	// TODO: more boundary characters to be added
-	return c == '\n' || c == '}' || c == '{' || c == ';';
+		// operators
+		{ "+", TokenType::TOK_PLUS },
+		{ "-", TokenType::TOK_MINUS },
+		{ "*", TokenType::TOK_MULTIPLY },
+		{ "/", TokenType::TOK_DIVIDE },
+		{ "=", TokenType::TOK_ASSIGN },
+		{ "==", TokenType::TOK_EQUAL },
+		{ "!=", TokenType::TOK_NOT_EQUAL },
+		{ "<", TokenType::TOK_LESS_THAN },
+		{ ">", TokenType::TOK_GREATER_THAN },
+		{ "<=", TokenType::TOK_LESS_EQUAL },
+		{ ">=", TokenType::TOK_GREATER_EQUAL },
+		{ "&&", TokenType::TOK_AND },
+		{ "||", TokenType::TOK_OR },
+		{ "!", TokenType::TOK_NOT },
+		{ "++", TokenType::TOK_INCREMENT },
+		{ "--", TokenType::TOK_DECREMENT },
+
+		// keywords
+		{ "if", TokenType::TOK_IF },
+		{ "else", TokenType::TOK_ELSE },
+		{ "for", TokenType::TOK_FOR },
+		{ "while", TokenType::TOK_WHILE },
+		{ "return", TokenType::TOK_RETURN },
+		{ "break", TokenType::TOK_BREAK },
+		{ "continue", TokenType::TOK_CONTINUE },
+		{ "switch", TokenType::TOK_SWITCH },
+		{ "case", TokenType::TOK_CASE },
+		{ "default", TokenType::TOK_DEFAULT },
+
+		{ "class", TokenType::TOK_CLASS },
+		{ "private", TokenType::TOK_PRIVATE },
+		{ "protected", TokenType::TOK_PROTECTED },
+		{ "public", TokenType::TOK_PUBLIC },
+		{ "static", TokenType::TOK_STATIC },
+
+		{ "new", TokenType::TOK_NEW },
+		{ "delete", TokenType::TOK_DELETE },
+
+		// data Types
+		{ "int", TokenType::TOK_INT },
+		{ "float", TokenType::TOK_FLOAT },
+		{ "double", TokenType::TOK_DOUBLE },
+		{ "char", TokenType::TOK_CHAR },
+		{ "string", TokenType::TOK_STRING },
+		{ "bool", TokenType::TOK_BOOL },
+		{ "void", TokenType::TOK_VOID },
+
+		// Preprocessors
+		{ "#pragma", TokenType::TOK_PRAGMA },
+		{ "#include", TokenType::TOK_INCLUDE },
+
+		// literals (other literals handled by tokenization matching)
+		{ "true", TokenType::TOK_BOOLEAN_LIT },
+		{ "false", TokenType::TOK_BOOLEAN_LIT },
+		{ "null", TokenType::TOK_NULL_LIT },
+
+		//
+		{ "error", TokenType::TOK_ERROR},
+
+	};
 }
 
 
