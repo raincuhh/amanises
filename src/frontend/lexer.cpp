@@ -61,31 +61,31 @@ void amanises::Lexer::debug_print_tokens(std::vector<Token>& tokens)
 	}
 }
 
-void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& token_list)
+void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok_list)
 {
 	lex_states lex_state = lex_states::LEX_INITIAL;
 	std::string tok_buf;
 
-	//std::cout << content << std::endl;
+	// #include "testLib.h"
+	//
+	//int main() {
+	//	print("Hello World!");
+	//	return 0;
+	//}
 
-	for (size_t i = 0; i < content.length(); i++)
+	for (size_t idx = 0; idx < content.length();)
 	{
-		char c = content[i];
-		//std::cout << c << std::endl;
+		char c = content[idx];
 
 		switch (lex_state)
 		{
 		case lex_states::LEX_INITIAL:
 
-			if (is_space(c))
-			{
-
-			}
 			/*
 			TODO:
-			check for whitespace
-			check for preproc
-			check for comments
+			check for whitespace / complete
+			check for preproc / complete
+			check for comments / complete
 			check for keyword
 			check for data types
 			check for operator
@@ -93,15 +93,46 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			check for identifiers
 			check for literals
 			*/
+
+			if (is_space(c))
+			{
+				std::cout << "entering whitespace state" << std::endl;
+				idx++;
+				//lex_state = lex_states::LEX_WHITESPACE; 
+			} 
+			else if (is_preproc(c))
+			{
+				std::cout << "entering preproc state" << std::endl;
+				lex_state = lex_states::LEX_PREPROC;
+				++idx;
+				continue;
+			}
+			else if (c == '/')
+			{
+				if (peek_ahead_by_char(content, idx, '/'))
+				{
+					lex_state = lex_states::LEX_COMMENTS;
+					idx++;
+				}
+				else if (peek_ahead_by_char(content, idx, '*'))
+				{
+					lex_state = lex_states::LEX_COMMENTS;
+				}
+			}
+			//else if (c == '/')
+			//{
+			//	if (idx + 1 < content.length() && content[idx + 1] == '/')
+			//	{
+			//		//lex_state = lex_states::LEX_COMMENTS;
+			//	}
+			//}
+			//else if (is_operator(content, idx))
+			//{
+			//}
 			
 			break;
 		case lex_states::LEX_PREPROC:
-
-			
-			break;
-		case lex_states::LEX_COMMENTS:
-
-			
+			handle_state_preproc(content, idx, tok_buf, lex_state, tok_list);
 			break;
 		case lex_states::LEX_KEYWORD:
 
@@ -128,13 +159,22 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 
 			break;
+		case lex_states::LEX_WHITESPACE:
+			while (idx < content.length() && is_space(content[idx]))
+			{
+				idx++;
+				std::cout << "whitspace" << std::endl;
+			}
+			lex_state = lex_states::LEX_INITIAL;
+			break;
 		default:
 
 			break;
 		}
+		idx++;
 	}
 
-	token_list.push_back(Token{ .kind = token_kind::TOK_EOF });
+	tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
 }
 
 std::string amanises::Lexer::trim_white_space(std::string& content)
@@ -183,36 +223,36 @@ std::string amanises::Lexer::get_token_kind_str(const token_kind type)
 	switch (type)
 	{
 	// reserved keywords
-	case token_kind::TOK_IF:            return "IF";
-	case token_kind::TOK_ELSE:          return "ELSE";
-	case token_kind::TOK_FOR:           return "FOR";
-	case token_kind::TOK_WHILE:         return "WHILE";
-	case token_kind::TOK_RETURN:        return "RETURN";
-	case token_kind::TOK_BREAK:         return "BREAK";
-	case token_kind::TOK_CONTINUE:      return "CONTINUE";
-	case token_kind::TOK_SWITCH:        return "SWITCH";
-	case token_kind::TOK_CASE:          return "CASE";
-	case token_kind::TOK_DEFAULT:       return "DEFAULT";
+	case token_kind::TOK_IF:               return "IF";
+	case token_kind::TOK_ELSE:             return "ELSE";
+	case token_kind::TOK_FOR:              return "FOR";
+	case token_kind::TOK_WHILE:            return "WHILE";
+	case token_kind::TOK_RETURN:           return "RETURN";
+	case token_kind::TOK_BREAK:            return "BREAK";
+	case token_kind::TOK_CONTINUE:         return "CONTINUE";
+	case token_kind::TOK_SWITCH:           return "SWITCH";
+	case token_kind::TOK_CASE:             return "CASE";
+	case token_kind::TOK_DEFAULT:          return "DEFAULT";
 
-	case token_kind::TOK_CLASS:         return "CLASS";
-	case token_kind::TOK_PRIVATE:       return "PRIVATE";
-	case token_kind::TOK_PROTECTED:     return "PROTECTED";
-	case token_kind::TOK_PUBLIC:        return "PUBLIC";
-	case token_kind::TOK_STATIC:        return "STATIC";
+	case token_kind::TOK_CLASS:            return "CLASS";
+	case token_kind::TOK_PRIVATE:          return "PRIVATE";
+	case token_kind::TOK_PROTECTED:        return "PROTECTED";
+	case token_kind::TOK_PUBLIC:           return "PUBLIC";
+	case token_kind::TOK_STATIC:           return "STATIC";
 
-	case token_kind::TOK_NEW:           return "NEW";
-	case token_kind::TOK_DELETE:        return "DELETE";
+	case token_kind::TOK_NEW:              return "NEW";
+	case token_kind::TOK_DELETE:           return "DELETE";
 
 	// data types
-	case token_kind::TOK_INT:           return "INT";
-	case token_kind::TOK_FLOAT:         return "FLOAT";
-	case token_kind::TOK_DOUBLE:        return "DOUBLE";
-	case token_kind::TOK_CHAR:          return "CHAR";
-	case token_kind::TOK_STRING:        return "STRING";
-	case token_kind::TOK_BOOL:          return "BOOL";
-	case token_kind::TOK_VOID:          return "VOID";
+	case token_kind::TOK_INT:              return "INT";
+	case token_kind::TOK_FLOAT:            return "FLOAT";
+	case token_kind::TOK_DOUBLE:           return "DOUBLE";
+	case token_kind::TOK_CHAR:             return "CHAR";
+	case token_kind::TOK_STRING:           return "STRING";
+	case token_kind::TOK_BOOL:             return "BOOL";
+	case token_kind::TOK_VOID:             return "VOID";
 
-		// operators
+	// operators
 	case token_kind::TOK_PLUS:             return "PLUS";
 	case token_kind::TOK_MINUS:            return "MINUS";
 	case token_kind::TOK_MULTIPLY:         return "MULTIPLY";
@@ -243,48 +283,48 @@ std::string amanises::Lexer::get_token_kind_str(const token_kind type)
 	case token_kind::TOK_SCOPE:            return "SCOPE";
 
 	// punctuation
-	case token_kind::TOK_SEMICOLON:     return "SEMICOLON";
-	case token_kind::TOK_COLON:         return "COLON";
-	case token_kind::TOK_DOT:           return "DOT";
-	case token_kind::TOK_COMMA:         return "COMMA";
-	case token_kind::TOK_OPEN_PAR:      return "OPEN_PAR";
-	case token_kind::TOK_CLOSE_PAR:     return "CLOSE_PAR";
-	case token_kind::TOK_OPEN_BRACE:    return "OPEN_BRACE";
-	case token_kind::TOK_CLOSE_BRACE:   return "CLOSE_BRACE";
-	case token_kind::TOK_OPEN_BRACKET:  return "OPEN_BRACKET";
-	case token_kind::TOK_CLOSE_BRACKET: return "CLOSE_BRACKET";
+	case token_kind::TOK_SEMICOLON:		   return "SEMICOLON";
+	case token_kind::TOK_COLON:            return "COLON";
+	case token_kind::TOK_DOT:              return "DOT";
+	case token_kind::TOK_COMMA:            return "COMMA";
+	case token_kind::TOK_OPEN_PAR:         return "OPEN_PAR";
+	case token_kind::TOK_CLOSE_PAR:        return "CLOSE_PAR";
+	case token_kind::TOK_OPEN_BRACE:       return "OPEN_BRACE";
+	case token_kind::TOK_CLOSE_BRACE:      return "CLOSE_BRACE";
+	case token_kind::TOK_OPEN_BRACKET:     return "OPEN_BRACKET";
+	case token_kind::TOK_CLOSE_BRACKET:    return "CLOSE_BRACKET";
 
 	// identifier
-	case token_kind::TOK_IDENTIFIER:    return "IDENTIFIER";
+	case token_kind::TOK_IDENTIFIER:       return "IDENTIFIER";
 
-	// literals
-	case token_kind::TOK_INTEGER_LIT:   return "INTEGER_LIT";
-	case token_kind::TOK_FLOAT_LIT:     return "FLOAT_LIT";
-	case token_kind::TOK_CHAR_LIT:      return "CHAR_LIT";
-	case token_kind::TOK_STRING_LIT:    return "STRING_LIT";
-	case token_kind::TOK_BOOLEAN_LIT:   return "BOOLEAN_LIT";
-	case token_kind::TOK_NULL_LIT:      return "NULL_LIT";
+	// literals 
+	case token_kind::TOK_INTEGER_LIT:      return "INTEGER_LIT";
+	case token_kind::TOK_FLOAT_LIT:        return "FLOAT_LIT";
+	case token_kind::TOK_CHAR_LIT:         return "CHAR_LIT";
+	case token_kind::TOK_STRING_LIT:       return "STRING_LIT";
+	case token_kind::TOK_BOOLEAN_LIT:      return "BOOLEAN_LIT";
+	case token_kind::TOK_NULL_LIT:         return "NULL_LIT";
 
 	// comments
-	case token_kind::TOK_LINE_COMMENT:  return "LINE_COMMENT";
-	case token_kind::TOK_BLOCK_COMMENT: return "BLOCK_COMMENT";
+	case token_kind::TOK_LINE_COMMENT:     return "LINE_COMMENT";
+	case token_kind::TOK_BLOCK_COMMENT:    return "BLOCK_COMMENT";
 
 	// function related
-	case token_kind::TOK_FUNCTION:      return "FUNCTION";
-	case token_kind::TOK_METHOD:        return "METHOD";
-	case token_kind::TOK_RETURN_TYPE:   return "RETURN_TYPE";
+	case token_kind::TOK_FUNCTION:         return "FUNCTION";
+	case token_kind::TOK_METHOD:           return "METHOD";
+	case token_kind::TOK_RETURN_TYPE:      return "RETURN_TYPE";
 
 	// start and end of file
-	case token_kind::TOK_EOF:           return "_EOF";
-	case token_kind::TOK_SOF:           return "_SOF";
+	case token_kind::TOK_EOF:              return "_EOF";
+	case token_kind::TOK_SOF:              return "_SOF";
 
 	// preprocessors
-	case token_kind::TOK_PRAGMA:        return "PRAGMA";
-	case token_kind::TOK_INCLUDE:       return "INCLUDE";
+	case token_kind::TOK_PRAGMA:           return "PRAGMA";
+	case token_kind::TOK_INCLUDE:          return "INCLUDE";
 
 	// error handling
-	case token_kind::TOK_ERROR:         return "ERROR";
-	default:                           return "UNDEFINED";
+	case token_kind::TOK_ERROR:            return "ERROR";
+	default:                               return "UNDEFINED";
 	}
 }
 
@@ -402,6 +442,11 @@ bool amanises::Lexer::is_space(char _c)
 	}
 }
 
+bool amanises::Lexer::is_preproc(char _c)
+{
+	return _c == '#';
+}
+
 inline bool amanises::Lexer::is_alpha(char _c)
 {
 	return std::isalpha(static_cast<unsigned char>(_c));
@@ -419,31 +464,31 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	switch (c)
 	{
 	case '+':
-		if (operator_peek_ahead(content, idx, '+')) 
+		if (peek_ahead_by_char(content, idx, '+'))
 		{
 			return true;
 		}
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '-':
-		if (operator_peek_ahead(content, idx, '-')) 
+		if (peek_ahead_by_char(content, idx, '-'))
 		{
 			return true;
 		}
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
-		if (operator_peek_ahead(content, idx, '>'))
+		if (peek_ahead_by_char(content, idx, '>'))
 		{
 			return true;
 		}
 		return true;
 	case '*':
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
@@ -452,45 +497,38 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	case '%':
 		return true;
 	case '=':
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '!':
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '<':
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
 
 		return true;
 	case '>':
-		if (operator_peek_ahead(content, idx, '='))
+		if (peek_ahead_by_char(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '&':
-		if (operator_peek_ahead(content, idx, '&'))
+		if (peek_ahead_by_char(content, idx, '&'))
 		{
 			return true;
 		}
 		return true;
 	case '|':
-		if (operator_peek_ahead(content, idx, '|'))
-		{
-			return true;
-		}
-		return true;
-	case '.':
-	case ':':
-		if (operator_peek_ahead(content, idx, ':'))
+		if (peek_ahead_by_char(content, idx, '|'))
 		{
 			return true;
 		}
@@ -500,14 +538,33 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	}
 }
 
-bool amanises::Lexer::operator_peek_ahead(const std::string_view& content, size_t& idx, char to_check)
+bool amanises::Lexer::peek_ahead_by_char(const std::string_view& content, size_t& idx, char to_check)
 {
 	if (idx + 1 < content.size() && content[idx + 1] == to_check)
 	{
-		idx++;
 		return true;
 	}
 	return false;
+}
+
+bool amanises::Lexer::is_punctuator(char _c)
+{
+	switch (_c)
+	{
+	case ';':
+	case ':':
+	case '.':
+	case ',':
+	case '(':
+	case ')':
+	case '{':
+	case '}':
+	case '[':
+	case ']':
+		return true;
+	default:
+		return false;
+	}
 }
 
 bool amanises::Lexer::is_identifier(char _c)
@@ -519,6 +576,29 @@ bool amanises::Lexer::is_digit(char _c)
 {
 	return std::isdigit(static_cast<unsigned char>(_c));
 }
+
+void amanises::Lexer::handle_state_preproc(const std::string_view& content, size_t& idx, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+{
+	// clearing the buffer, and pushing # hopefully...
+	tok_buf.clear();
+	tok_buf.push_back('#');
+
+	while (idx < content.length() && is_alpha_num(content[idx]))
+	{
+		tok_buf.push_back(content[idx]);
+		idx++;
+	}
+
+	auto it = tokMap.find(tok_buf);
+
+	if (it != tokMap.end() && tok_buf == "#include")
+	{
+		tok_list.push_back(Token{ .kind = tokMap[tok_buf] });
+	}
+
+	lex_state = lex_states::LEX_INITIAL;
+}
+
 
 
 

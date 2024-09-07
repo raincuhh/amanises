@@ -1,6 +1,1 @@
-#include "testLib.h"
-
-int main() {
-	print("Hello World!");
-	return 0;
-}
+#include

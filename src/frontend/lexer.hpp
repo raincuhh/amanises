@@ -31,7 +31,8 @@ namespace amanises
 			LEX_PUNCTUATION,
 			LEX_IDENTIFIER,
 			LEX_LITERALS,
-			LEX_ERROR
+			LEX_ERROR,
+			LEX_WHITESPACE
 			// might add states for stuff like preprocessor conditionals, etc.
 		};
 
@@ -65,14 +66,17 @@ namespace amanises
 		//checks for base cases
 		bool is_buf_boundary_char(char _c);
 		bool is_space(char _c);
+		bool is_preproc(char _c);
 		inline bool is_alpha(char _c);
 		inline bool is_alpha_num(char _c);
 		bool is_operator(const std::string_view& content, size_t& idx);
-		bool operator_peek_ahead(const std::string_view& content, size_t& idx, char to_check);
-
+		bool peek_ahead_by_char(const std::string_view& content, size_t& idx, char to_check);
+		bool is_punctuator(char _c);
 		bool is_identifier(char _c);
 		bool is_digit(char _c);
 
 
+		void handle_state_preproc(const std::string_view& content, size_t& idx, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		
 	};
 }
