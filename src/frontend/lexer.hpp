@@ -12,6 +12,8 @@
 #include "../utils/utils.hpp"
 #include "../utils/logger.hpp"
 
+//context for the semantic expression checking later on
+
 namespace amanises
 {
 	class Lexer
@@ -22,16 +24,16 @@ namespace amanises
 
 		enum class lex_states
 		{
-			LEX_ST_INITIAL = 0,
-			LEX_ST_PREPROC,
-			LEX_ST_COMMENTS,
-			LEX_ST_KEYWORD,
-			LEX_ST_DATA_TYPES,
-			LEX_ST_OPERATOR,
-			LEX_ST_PUNCTUATION,
-			LEX_ST_IDENTIFIER,
-			LEX_ST_LITERALS,
-			LEX_ST_ERROR
+			LEX_INITIAL = 0,
+			LEX_PREPROC,
+			LEX_COMMENTS,
+			LEX_KEYWORD,
+			LEX_DATA_TYPE,
+			LEX_OPERATOR,
+			LEX_PUNCTUATION,
+			LEX_IDENTIFIER,
+			LEX_LITERALS,
+			LEX_ERROR
 			// might add states for stuff like preprocessor conditionals, etc.
 		};
 
@@ -57,11 +59,11 @@ namespace amanises
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
 		std::string trim_white_space(std::string& content);
 		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
-		std::string get_token_type_by_str(const token_type type);
+		std::string get_token_kind_str(const token_kind type);
 
 		void init_u_tok_map();
 
-		std::unordered_map<std::string, token_type> tokMap;
+		std::unordered_map<std::string, token_kind> tokMap;
 
 		//checks for different cases
 

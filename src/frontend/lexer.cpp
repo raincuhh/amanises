@@ -48,7 +48,7 @@ void amanises::Lexer::debug_print_tokens(std::vector<Token>& tokens)
 
 	for (const auto& token : tokens)
 	{
-		std::cout << "token (type: " << get_token_type_by_str(token.type) << ", value: ";
+		std::cout << "token (type: " << get_token_kind_str(token.kind) << ", value: ";
 
 		if (token.val)
 		{
@@ -62,9 +62,11 @@ void amanises::Lexer::debug_print_tokens(std::vector<Token>& tokens)
 	}
 }
 
-void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tokenList)
+void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& token_list)
 {
-	lex_states lex_state = lex_states::LEX_ST_INITIAL;
+	using state = amanises::Lexer::lex_states;
+
+	lex_states lex_state = state::LEX_INITIAL;
 	std::string tok_buf;
 
 	std::cout << content << std::endl;
@@ -76,7 +78,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 		switch (lex_state)
 		{
-		case lex_states::LEX_ST_INITIAL:
+		case state::LEX_INITIAL:
 			/*
 			TODO:
 			check for whitespace
@@ -91,36 +93,36 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			*/
 			
 			break;
-		case lex_states::LEX_ST_PREPROC:
+		case state::LEX_PREPROC:
 
 			
 			break;
-		case lex_states::LEX_ST_COMMENTS:
+		case state::LEX_COMMENTS:
 
 			
 			break;
-		case lex_states::LEX_ST_KEYWORD:
+		case state::LEX_KEYWORD:
 
 
 			break;
-		case lex_states::LEX_ST_DATA_TYPES:
+		case state::LEX_DATA_TYPE:
 
 
 			break;
-		case lex_states::LEX_ST_OPERATOR:
+		case state::LEX_OPERATOR:
 
 
 			break;
-		case lex_states::LEX_ST_PUNCTUATION:
+		case state::LEX_PUNCTUATION:
 
 
 			break;
 
-		case lex_states::LEX_ST_IDENTIFIER:
+		case state::LEX_IDENTIFIER:
 
 
 			break;
-		case lex_states::LEX_ST_LITERALS:
+		case state::LEX_LITERALS:
 
 
 			break;
@@ -130,7 +132,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 		}
 	}
 
-	tokenList.push_back(Token{ .type = token_type::TOK_EOF });
+	token_list.push_back(Token{ .kind = token_kind::TOK_EOF });
 }
 
 std::string amanises::Lexer::trim_white_space(std::string& content)
@@ -174,100 +176,100 @@ std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& co
 	return chunks;
 }
 
-std::string amanises::Lexer::get_token_type_by_str(const token_type type)
+std::string amanises::Lexer::get_token_kind_str(const token_kind type)
 {
 	switch (type)
 	{
 	// reserved keywords
-	case token_type::TOK_IF:            return "IF";
-	case token_type::TOK_ELSE:          return "ELSE";
-	case token_type::TOK_FOR:           return "FOR";
-	case token_type::TOK_WHILE:         return "WHILE";
-	case token_type::TOK_RETURN:        return "RETURN";
-	case token_type::TOK_BREAK:         return "BREAK";
-	case token_type::TOK_CONTINUE:      return "CONTINUE";
-	case token_type::TOK_SWITCH:        return "SWITCH";
-	case token_type::TOK_CASE:          return "CASE";
-	case token_type::TOK_DEFAULT:       return "DEFAULT";
+	case token_kind::TOK_IF:            return "IF";
+	case token_kind::TOK_ELSE:          return "ELSE";
+	case token_kind::TOK_FOR:           return "FOR";
+	case token_kind::TOK_WHILE:         return "WHILE";
+	case token_kind::TOK_RETURN:        return "RETURN";
+	case token_kind::TOK_BREAK:         return "BREAK";
+	case token_kind::TOK_CONTINUE:      return "CONTINUE";
+	case token_kind::TOK_SWITCH:        return "SWITCH";
+	case token_kind::TOK_CASE:          return "CASE";
+	case token_kind::TOK_DEFAULT:       return "DEFAULT";
 
-	case token_type::TOK_CLASS:         return "CLASS";
-	case token_type::TOK_PRIVATE:       return "PRIVATE";
-	case token_type::TOK_PROTECTED:     return "PROTECTED";
-	case token_type::TOK_PUBLIC:        return "PUBLIC";
-	case token_type::TOK_STATIC:        return "STATIC";
+	case token_kind::TOK_CLASS:         return "CLASS";
+	case token_kind::TOK_PRIVATE:       return "PRIVATE";
+	case token_kind::TOK_PROTECTED:     return "PROTECTED";
+	case token_kind::TOK_PUBLIC:        return "PUBLIC";
+	case token_kind::TOK_STATIC:        return "STATIC";
 
-	case token_type::TOK_NEW:           return "NEW";
-	case token_type::TOK_DELETE:        return "DELETE";
+	case token_kind::TOK_NEW:           return "NEW";
+	case token_kind::TOK_DELETE:        return "DELETE";
 
 	// data types
-	case token_type::TOK_INT:           return "INT";
-	case token_type::TOK_FLOAT:         return "FLOAT";
-	case token_type::TOK_DOUBLE:        return "DOUBLE";
-	case token_type::TOK_CHAR:          return "CHAR";
-	case token_type::TOK_STRING:        return "STRING";
-	case token_type::TOK_BOOL:          return "BOOL";
-	case token_type::TOK_VOID:          return "VOID";
+	case token_kind::TOK_INT:           return "INT";
+	case token_kind::TOK_FLOAT:         return "FLOAT";
+	case token_kind::TOK_DOUBLE:        return "DOUBLE";
+	case token_kind::TOK_CHAR:          return "CHAR";
+	case token_kind::TOK_STRING:        return "STRING";
+	case token_kind::TOK_BOOL:          return "BOOL";
+	case token_kind::TOK_VOID:          return "VOID";
 
 	// operators
-	case token_type::TOK_PLUS:          return "PLUS";
-	case token_type::TOK_MINUS:         return "MINUS";
-	case token_type::TOK_MULTIPLY:      return "MULTIPLY";
-	case token_type::TOK_DIVIDE:        return "DIVIDE";
-	case token_type::TOK_ASSIGN:        return "ASSIGN";
-	case token_type::TOK_EQUAL:         return "EQUAL";
-	case token_type::TOK_NOT_EQUAL:     return "NOT_EQUAL";
-	case token_type::TOK_LESS_THAN:     return "LESS_THAN";
-	case token_type::TOK_GREATER_THAN:  return "GREATER_THAN";
-	case token_type::TOK_LESS_EQUAL:    return "LESS_EQUAL";
-	case token_type::TOK_GREATER_EQUAL: return "GREATER_EQUAL";
-	case token_type::TOK_AND:           return "AND";
-	case token_type::TOK_OR:            return "OR";
-	case token_type::TOK_NOT:           return "NOT";
-	case token_type::TOK_INCREMENT:     return "INCREMENT";
-	case token_type::TOK_DECREMENT:     return "DECREMENT";
+	case token_kind::TOK_PLUS:          return "PLUS";
+	case token_kind::TOK_MINUS:         return "MINUS";
+	case token_kind::TOK_MULTIPLY:      return "MULTIPLY";
+	case token_kind::TOK_DIVIDE:        return "DIVIDE";
+	case token_kind::TOK_ASSIGN:        return "ASSIGN";
+	case token_kind::TOK_EQUAL:         return "EQUAL";
+	case token_kind::TOK_NOT_EQUAL:     return "NOT_EQUAL";
+	case token_kind::TOK_LESS_THAN:     return "LESS_THAN";
+	case token_kind::TOK_GREATER_THAN:  return "GREATER_THAN";
+	case token_kind::TOK_LESS_EQUAL:    return "LESS_EQUAL";
+	case token_kind::TOK_GREATER_EQUAL: return "GREATER_EQUAL";
+	case token_kind::TOK_AND:           return "AND";
+	case token_kind::TOK_OR:            return "OR";
+	case token_kind::TOK_NOT:           return "NOT";
+	case token_kind::TOK_INCREMENT:     return "INCREMENT";
+	case token_kind::TOK_DECREMENT:     return "DECREMENT";
 
 	// punctuation
-	case token_type::TOK_SEMICOLON:     return "SEMICOLON";
-	case token_type::TOK_COLON:         return "COLON";
-	case token_type::TOK_DOT:           return "DOT";
-	case token_type::TOK_COMMA:         return "COMMA";
-	case token_type::TOK_OPEN_PAR:      return "OPEN_PAR";
-	case token_type::TOK_CLOSE_PAR:     return "CLOSE_PAR";
-	case token_type::TOK_OPEN_BRACE:    return "OPEN_BRACE";
-	case token_type::TOK_CLOSE_BRACE:   return "CLOSE_BRACE";
-	case token_type::TOK_OPEN_BRACKET:  return "OPEN_BRACKET";
-	case token_type::TOK_CLOSE_BRACKET: return "CLOSE_BRACKET";
+	case token_kind::TOK_SEMICOLON:     return "SEMICOLON";
+	case token_kind::TOK_COLON:         return "COLON";
+	case token_kind::TOK_DOT:           return "DOT";
+	case token_kind::TOK_COMMA:         return "COMMA";
+	case token_kind::TOK_OPEN_PAR:      return "OPEN_PAR";
+	case token_kind::TOK_CLOSE_PAR:     return "CLOSE_PAR";
+	case token_kind::TOK_OPEN_BRACE:    return "OPEN_BRACE";
+	case token_kind::TOK_CLOSE_BRACE:   return "CLOSE_BRACE";
+	case token_kind::TOK_OPEN_BRACKET:  return "OPEN_BRACKET";
+	case token_kind::TOK_CLOSE_BRACKET: return "CLOSE_BRACKET";
 
 	// identifier
-	case token_type::TOK_IDENTIFIER:    return "IDENTIFIER";
+	case token_kind::TOK_IDENTIFIER:    return "IDENTIFIER";
 
 	// literals
-	case token_type::TOK_INTEGER_LIT:   return "INTEGER_LIT";
-	case token_type::TOK_FLOAT_LIT:     return "FLOAT_LIT";
-	case token_type::TOK_CHAR_LIT:      return "CHAR_LIT";
-	case token_type::TOK_STRING_LIT:    return "STRING_LIT";
-	case token_type::TOK_BOOLEAN_LIT:   return "BOOLEAN_LIT";
-	case token_type::TOK_NULL_LIT:      return "NULL_LIT";
+	case token_kind::TOK_INTEGER_LIT:   return "INTEGER_LIT";
+	case token_kind::TOK_FLOAT_LIT:     return "FLOAT_LIT";
+	case token_kind::TOK_CHAR_LIT:      return "CHAR_LIT";
+	case token_kind::TOK_STRING_LIT:    return "STRING_LIT";
+	case token_kind::TOK_BOOLEAN_LIT:   return "BOOLEAN_LIT";
+	case token_kind::TOK_NULL_LIT:      return "NULL_LIT";
 
 	// comments
-	case token_type::TOK_LINE_COMMENT:  return "LINE_COMMENT";
-	case token_type::TOK_BLOCK_COMMENT: return "BLOCK_COMMENT";
+	case token_kind::TOK_LINE_COMMENT:  return "LINE_COMMENT";
+	case token_kind::TOK_BLOCK_COMMENT: return "BLOCK_COMMENT";
 
 	// function related
-	case token_type::TOK_FUNCTION:      return "FUNCTION";
-	case token_type::TOK_METHOD:        return "METHOD";
-	case token_type::TOK_RETURN_TYPE:   return "RETURN_TYPE";
+	case token_kind::TOK_FUNCTION:      return "FUNCTION";
+	case token_kind::TOK_METHOD:        return "METHOD";
+	case token_kind::TOK_RETURN_TYPE:   return "RETURN_TYPE";
 
 	// start and end of file
-	case token_type::TOK_EOF:           return "_EOF";
-	case token_type::TOK_SOF:           return "_SOF";
+	case token_kind::TOK_EOF:           return "_EOF";
+	case token_kind::TOK_SOF:           return "_SOF";
 
 	// preprocessors
-	case token_type::TOK_PRAGMA:        return "PRAGMA";
-	case token_type::TOK_INCLUDE:       return "INCLUDE";
+	case token_kind::TOK_PRAGMA:        return "PRAGMA";
+	case token_kind::TOK_INCLUDE:       return "INCLUDE";
 
 	// error handling
-	case token_type::TOK_ERROR:         return "ERROR";
+	case token_kind::TOK_ERROR:         return "ERROR";
 	default:                           return "UNDEFINED";
 	}
 }
@@ -276,68 +278,68 @@ void amanises::Lexer::init_u_tok_map()
 {
 	tokMap = {
 		// punctuation
-		{ ";", token_type::TOK_SEMICOLON },
-		{ ":", token_type::TOK_COLON },
-		{ ".", token_type::TOK_DOT },
-		{ ",", token_type::TOK_COMMA },
-		{ "(", token_type::TOK_OPEN_PAR },
-		{ ")", token_type::TOK_CLOSE_PAR },
-		{ "{", token_type::TOK_OPEN_BRACE },
-		{ "}", token_type::TOK_CLOSE_BRACE },
-		{ "[", token_type::TOK_OPEN_BRACKET },
-		{ "]", token_type::TOK_CLOSE_BRACKET },
+		{ ";", token_kind::TOK_SEMICOLON },
+		{ ":", token_kind::TOK_COLON },
+		{ ".", token_kind::TOK_DOT },
+		{ ",", token_kind::TOK_COMMA },
+		{ "(", token_kind::TOK_OPEN_PAR },
+		{ ")", token_kind::TOK_CLOSE_PAR },
+		{ "{", token_kind::TOK_OPEN_BRACE },
+		{ "}", token_kind::TOK_CLOSE_BRACE },
+		{ "[", token_kind::TOK_OPEN_BRACKET },
+		{ "]", token_kind::TOK_CLOSE_BRACKET },
 
 		// operators
-		{ "+", token_type::TOK_PLUS },
-		{ "-", token_type::TOK_MINUS },
-		{ "*", token_type::TOK_MULTIPLY },
-		{ "/", token_type::TOK_DIVIDE },
-		{ "=", token_type::TOK_ASSIGN },
-		{ "==", token_type::TOK_EQUAL },
-		{ "!=", token_type::TOK_NOT_EQUAL },
-		{ "<", token_type::TOK_LESS_THAN },
-		{ ">", token_type::TOK_GREATER_THAN },
-		{ "<=", token_type::TOK_LESS_EQUAL },
-		{ ">=", token_type::TOK_GREATER_EQUAL },
-		{ "&&", token_type::TOK_AND },
-		{ "||", token_type::TOK_OR },
-		{ "!", token_type::TOK_NOT },
-		{ "++", token_type::TOK_INCREMENT },
-		{ "--", token_type::TOK_DECREMENT },
+		{ "+", token_kind::TOK_PLUS },
+		{ "-", token_kind::TOK_MINUS },
+		{ "*", token_kind::TOK_MULTIPLY },
+		{ "/", token_kind::TOK_DIVIDE },
+		{ "=", token_kind::TOK_ASSIGN },
+		{ "==", token_kind::TOK_EQUAL },
+		{ "!=", token_kind::TOK_NOT_EQUAL },
+		{ "<", token_kind::TOK_LESS_THAN },
+		{ ">", token_kind::TOK_GREATER_THAN },
+		{ "<=", token_kind::TOK_LESS_EQUAL },
+		{ ">=", token_kind::TOK_GREATER_EQUAL },
+		{ "&&", token_kind::TOK_AND },
+		{ "||", token_kind::TOK_OR },
+		{ "!", token_kind::TOK_NOT },
+		{ "++", token_kind::TOK_INCREMENT },
+		{ "--", token_kind::TOK_DECREMENT },
 
 		// keywords
-		{ "if", token_type::TOK_IF },
-		{ "else", token_type::TOK_ELSE },
-		{ "for", token_type::TOK_FOR },
-		{ "while", token_type::TOK_WHILE },
-		{ "return", token_type::TOK_RETURN },
-		{ "break", token_type::TOK_BREAK },
-		{ "continue", token_type::TOK_CONTINUE },
-		{ "switch", token_type::TOK_SWITCH },
-		{ "case", token_type::TOK_CASE },
-		{ "default", token_type::TOK_DEFAULT },
+		{ "if", token_kind::TOK_IF },
+		{ "else", token_kind::TOK_ELSE },
+		{ "for", token_kind::TOK_FOR },
+		{ "while", token_kind::TOK_WHILE },
+		{ "return", token_kind::TOK_RETURN },
+		{ "break", token_kind::TOK_BREAK },
+		{ "continue", token_kind::TOK_CONTINUE },
+		{ "switch", token_kind::TOK_SWITCH },
+		{ "case", token_kind::TOK_CASE },
+		{ "default", token_kind::TOK_DEFAULT },
 
-		{ "class", token_type::TOK_CLASS },
-		{ "private", token_type::TOK_PRIVATE },
-		{ "protected", token_type::TOK_PROTECTED },
-		{ "public", token_type::TOK_PUBLIC },
-		{ "static", token_type::TOK_STATIC },
+		{ "class", token_kind::TOK_CLASS },
+		{ "private", token_kind::TOK_PRIVATE },
+		{ "protected", token_kind::TOK_PROTECTED },
+		{ "public", token_kind::TOK_PUBLIC },
+		{ "static", token_kind::TOK_STATIC },
 
-		{ "new", token_type::TOK_NEW },
-		{ "delete", token_type::TOK_DELETE },
+		{ "new", token_kind::TOK_NEW },
+		{ "delete", token_kind::TOK_DELETE },
 
 		// data Types
-		{ "int", token_type::TOK_INT },
-		{ "float", token_type::TOK_FLOAT },
-		{ "double", token_type::TOK_DOUBLE },
-		{ "char", token_type::TOK_CHAR },
-		{ "string", token_type::TOK_STRING },
-		{ "bool", token_type::TOK_BOOL },
-		{ "void", token_type::TOK_VOID },
+		{ "int", token_kind::TOK_INT },
+		{ "float", token_kind::TOK_FLOAT },
+		{ "double", token_kind::TOK_DOUBLE },
+		{ "char", token_kind::TOK_CHAR },
+		{ "string", token_kind::TOK_STRING },
+		{ "bool", token_kind::TOK_BOOL },
+		{ "void", token_kind::TOK_VOID },
 
 		// preprocessors
-		{ "#pragma", token_type::TOK_PRAGMA },
-		{ "#include", token_type::TOK_INCLUDE },
+		{ "#pragma", token_kind::TOK_PRAGMA },
+		{ "#include", token_kind::TOK_INCLUDE },
 
 		// literals  are handled by the lexer when it comes to that point
 
