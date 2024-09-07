@@ -25,12 +25,9 @@ namespace amanises
 			LEX_INITIAL = 0,
 			LEX_PREPROC,
 			LEX_COMMENTS,
-			LEX_KEYWORD,
-			LEX_DATA_TYPE,
 			LEX_OPERATOR,
 			LEX_PUNCTUATION,
 			LEX_IDENTIFIER,
-			LEX_LITERALS,
 			LEX_ERROR,
 			LEX_WHITESPACE
 			// might add states for stuff like preprocessor conditionals, etc.
@@ -64,19 +61,22 @@ namespace amanises
 		void init_u_tok_map();
 
 		//checks for base cases
-		bool is_buf_boundary_char(char _c);
-		bool is_space(char _c);
-		bool is_preproc(char _c);
-		inline bool is_alpha(char _c);
-		inline bool is_alpha_num(char _c);
+		bool is_chunk_buf_boundary_char(char c);
+		bool is_space(char c);
+		bool is_preproc(char c);
+		inline bool is_alpha(char c);
+		inline bool is_alpha_num(char c);
 		bool is_operator(const std::string_view& content, size_t& idx);
 		bool peek_ahead_by_char(const std::string_view& content, size_t& idx, char to_check);
-		bool is_punctuator(char _c);
-		bool is_identifier(char _c);
-		bool is_digit(char _c);
+		bool is_punctuator(char c);
+		bool is_identifier(char c);
+		bool is_digit(char c);
 
 
 		void handle_state_preproc(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		void handle_state_operator(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		void handle_state_punctuator(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		void handle_state_identifier(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void handle_state_whitespace(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 	};
 }

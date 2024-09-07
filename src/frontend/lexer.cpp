@@ -86,7 +86,6 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			check for whitespace / complete
 			check for preproc / complete
 			check for comments / complete
-			check for keyword
 			check for data types
 			check for operator
 			check for punctuator
@@ -104,7 +103,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 				lex_state = lex_states::LEX_PREPROC;
 				continue;
 			}
-			/*
+			
 			else if (c == '/')
 			{
 				if (peek_ahead_by_char(content, idx, '/'))
@@ -121,68 +120,28 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 					lex_state = lex_states::LEX_OPERATOR;
 				}
 			}
-			*/
-			//else if (c == '/')
-			//{
-			//	if (idx + 1 < content.length() && content[idx + 1] == '/')
-			//	{
-			//		//lex_state = lex_states::LEX_COMMENTS;
-			//	}
-			//}
-			//else if (is_operator(content, idx))
-			//{
-			//}
 			
 			break;
 		case lex_states::LEX_PREPROC:
 			handle_state_preproc(content, idx, c, tok_buf, lex_state, tok_list);
 			break;
-		case lex_states::LEX_KEYWORD:
-
-
-			break;
-		case lex_states::LEX_DATA_TYPE:
-
-
-			break;
 		case lex_states::LEX_OPERATOR:
-
 
 			break;
 		case lex_states::LEX_PUNCTUATION:
 
-
 			break;
-
 		case lex_states::LEX_IDENTIFIER:
-
-
-			break;
-		case lex_states::LEX_LITERALS:
-
 
 			break;
 		case lex_states::LEX_WHITESPACE:
 			handle_state_whitespace(content, idx, c, tok_buf, lex_state, tok_list);
 			continue;
-		default:
-
-			break;
 		}
 		idx++;
 	}
 
 	tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
-}
-
-std::string amanises::Lexer::trim_white_space(std::string& content)
-{
-	content.reserve(content.size());
-
-	content.erase(std::remove_if(content.begin(), content.end(), [](char c) {
-		return std::isspace(c);
-		}), content.end());
-	return content;
 }
 
 std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& content, size_t max_chunk_size)
@@ -200,7 +159,7 @@ std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& co
 		size_t end = std::min(start + max_chunk_size, content_size);
 
 		// ensure we only split on a boundary character
-		while (end < content_size && !is_buf_boundary_char(content[end])) {
+		while (end < content_size && !is_chunk_buf_boundary_char(content[end])) {
 			++end;
 		}
 
@@ -214,6 +173,16 @@ std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& co
 		start = end;
 	}
 	return chunks;
+}
+
+std::string amanises::Lexer::trim_white_space(std::string& content)
+{
+	content.reserve(content.size());
+
+	content.erase(std::remove_if(content.begin(), content.end(), [](char c) {
+		return std::isspace(c);
+		}), content.end());
+	return content;
 }
 
 std::string amanises::Lexer::get_token_kind_str(const token_kind type)
@@ -412,9 +381,9 @@ void amanises::Lexer::init_u_tok_map()
 	};
 }
 
-bool amanises::Lexer::is_buf_boundary_char(char _c)
+bool amanises::Lexer::is_chunk_buf_boundary_char(char c)
 {
-	switch (_c)
+	switch (c)
 	{
 	case '\n':
 	case '}':
@@ -426,9 +395,9 @@ bool amanises::Lexer::is_buf_boundary_char(char _c)
 	}
 }
 
-bool amanises::Lexer::is_space(char _c)
+bool amanises::Lexer::is_space(char c)
 {
-	switch (_c)
+	switch (c)
 	{
 	case ' ':
 	case '\t':
@@ -440,19 +409,19 @@ bool amanises::Lexer::is_space(char _c)
 	}
 }
 
-bool amanises::Lexer::is_preproc(char _c)
+bool amanises::Lexer::is_preproc(char c)
 {
-	return _c == '#';
+	return c == '#';
 }
 
-inline bool amanises::Lexer::is_alpha(char _c)
+inline bool amanises::Lexer::is_alpha(char c)
 {
-	return std::isalpha(static_cast<unsigned char>(_c));
+	return std::isalpha(static_cast<unsigned char>(c));
 }
 
-inline bool amanises::Lexer::is_alpha_num(char _c)
+inline bool amanises::Lexer::is_alpha_num(char c)
 {
-	return std::isalnum(static_cast<unsigned char>(_c));
+	return std::isalnum(static_cast<unsigned char>(c));
 }
 
 bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
@@ -545,9 +514,9 @@ bool amanises::Lexer::peek_ahead_by_char(const std::string_view& content, size_t
 	return false;
 }
 
-bool amanises::Lexer::is_punctuator(char _c)
+bool amanises::Lexer::is_punctuator(char c)
 {
-	switch (_c)
+	switch (c)
 	{
 	case ';':
 	case ':':
@@ -565,14 +534,14 @@ bool amanises::Lexer::is_punctuator(char _c)
 	}
 }
 
-bool amanises::Lexer::is_identifier(char _c)
+bool amanises::Lexer::is_identifier(char c)
 {
 	return false;
 }
 
-bool amanises::Lexer::is_digit(char _c)
+bool amanises::Lexer::is_digit(char c)
 {
-	return std::isdigit(static_cast<unsigned char>(_c));
+	return std::isdigit(static_cast<unsigned char>(c));
 }
 
 void amanises::Lexer::handle_state_preproc(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
@@ -596,6 +565,18 @@ void amanises::Lexer::handle_state_preproc(const std::string_view& content, size
 	}
 
 	lex_state = lex_states::LEX_INITIAL;
+}
+
+void amanises::Lexer::handle_state_operator(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+{
+}
+
+void amanises::Lexer::handle_state_punctuator(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+{
+}
+
+void amanises::Lexer::handle_state_identifier(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+{
 }
 
 void amanises::Lexer::handle_state_whitespace(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
