@@ -4,7 +4,7 @@
 #include <string>
 #include <optional>
 
-enum class TokenType {
+enum class token_type {
 	// start and end of file
 	TOK_EOF = 0,
 	TOK_SOF,
@@ -100,7 +100,7 @@ enum class TokenType {
 
 struct Token
 {
-	TokenType type;
+	token_type type;
 	std::optional<std::string> val;
 	size_t line;
 	size_t col;

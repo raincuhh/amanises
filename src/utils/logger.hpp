@@ -6,7 +6,7 @@
 #include <sstream>
 #include <ctime> 
 
-enum class LogType
+enum class log_type
 {
 	DEBUG, 
 	INFO, 
@@ -23,18 +23,18 @@ namespace amanises
 	{
 	public:
 		Logger(std::string& filepath);
-		~Logger() { if (logFile) logFile.close(); };
+		~Logger() { if (log_file) log_file.close(); };
 		
-		void log(LogType type, std::string msg);
-		bool clearLogs();
+		void log(log_type type, std::string msg);
+		bool clear_logs();
 
 	private:
-		std::ofstream logFile;
+		std::ofstream log_file;
 		std::string mLogFilepath;
 
-		std::string getLogTimestamp();
+		std::string get_log_time_stamp();
 
-		std::string logTypeToStr(LogType type);
+		std::string log_type_to_str(log_type type);
 	};
 }
 

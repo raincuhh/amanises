@@ -24,11 +24,10 @@ namespace amanises
 		Process(char* argv[], Logger* l);
 
 	private:
-		Logger* mLogger;
+		Logger* m_logger;
 
 		void init(char* argv[]);
-
-		bool verifyFilepath(const char* filepath);
+		bool verify_file_path(const char* filepath);
 	};
 }
 

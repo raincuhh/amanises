@@ -20,7 +20,7 @@ namespace amanises
 		using Utils = amanises::Utils;
 		using Logger = amanises::Logger;
 
-		enum class LexStates
+		enum class lex_states
 		{
 			LEX_ST_INITIAL = 0,
 			LEX_ST_PREPROC,
@@ -37,31 +37,31 @@ namespace amanises
 
 		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
 
-		bool lexContent();
+		bool lex_content();
 
-		void debugPrintTokens(std::vector<Token>& tokens);
-		std::vector<Token> getFullTokenList() const { return std::move(fullTokenList); };
+		void debug_print_tokens(std::vector<Token>& tokens);
+		std::vector<Token> get_full_token_list() const { return std::move(full_tok_list); };
 	private:
-		Logger* logger;
+		Logger* m_logger;
 
-		std::string content;
+		std::string m_content;
 		//std::string_view mContentView;
 		
-		size_t contentLen;
-		size_t cursor;
-		size_t line;
-		size_t col;
+		size_t m_content_len;
+		size_t m_cursor;
+		size_t m_line;
+		size_t m_col;
 
-		std::vector<Token> fullTokenList;
+		std::vector<Token> full_tok_list;
 
-		void tokenize(std::string_view content, std::vector<Token>& tokenList);
-		std::string trimWhite(std::string& content);
-		std::vector<std::string> splitToBuffers(const std::string& content, size_t maxChunkSize);
-		std::string getTokenTypeStr(const TokenType type);
+		void tokenize(std::string_view content, std::vector<Token>& tok_list);
+		std::string trim_white_space(std::string& content);
+		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
+		std::string get_token_type_by_str(const token_type type);
 
-		void initTokMap();
+		void init_u_tok_map();
 
-		std::unordered_map<std::string, TokenType> tokMap;
+		std::unordered_map<std::string, token_type> tokMap;
 
 		//checks for different cases
 

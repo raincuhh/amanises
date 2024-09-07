@@ -3,35 +3,38 @@
 amanises::Logger::Logger(std::string& filepath) :
 	mLogFilepath(filepath)
 {
-	logFile.open(filepath, std::ios::app);
-	if (!logFile.is_open())
+	log_file.open(filepath, std::ios::app);
+	if (!log_file.is_open())
 	{
-		log(LogType::ERROR, std::string("Failed opening logfile") + filepath);
+		log(log_type::ERROR, std::string("Failed opening logfile") + filepath);
 	}
 }
 
-void amanises::Logger::log(LogType type, std::string msg)
+void amanises::Logger::log(log_type type, std::string msg)
 {
-	std::string timestamp = getLogTimestamp();
+	std::string timestamp = get_log_time_stamp();
 	std::ostringstream entry;
 
+	// making the entry msg entry format
 	entry 
 		<< "[" << timestamp << "] "
-		<< logTypeToStr(type) << ": "
+		<< log_type_to_str(type) << ": "
 		<< msg;
 
 	std::cout << entry.str() << std::endl;
 
-	if (logFile.is_open())
+
+	// flushing the file after log
+	if (log_file.is_open())
 	{
 		entry
 			<< std::endl;
-		logFile << entry.str();
-		logFile.flush();
+		log_file << entry.str();
+		log_file.flush();
 	}
 }
 
-bool amanises::Logger::clearLogs()
+bool amanises::Logger::clear_logs()
 {
 	if (remove(mLogFilepath.c_str()))
 	{
@@ -40,26 +43,26 @@ bool amanises::Logger::clearLogs()
 	return false;
 }
 
-std::string amanises::Logger::getLogTimestamp()
+std::string amanises::Logger::get_log_time_stamp()
 {
 	time_t now = time(0);
-	tm* localTime = localtime(&now);
+	tm* local_time = localtime(&now);
 
 	char timestamp[20];
-	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localTime);
+	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", local_time);
 
 	return static_cast<std::string>(timestamp);
 }
 
-std::string amanises::Logger::logTypeToStr(LogType type)
+std::string amanises::Logger::log_type_to_str(log_type type)
 {
 	switch (type)
 	{
-	case LogType::DEBUG:	return "DEBUG";
-	case LogType::INFO:		return "INFO";
-	case LogType::WARNING:  return "WARNING";
-	case LogType::ERROR:    return "ERROR";
-	case LogType::CRITICAL: return "CRITICAL";
+	case log_type::DEBUG:	return "DEBUG";
+	case log_type::INFO:		return "INFO";
+	case log_type::WARNING:  return "WARNING";
+	case log_type::ERROR:    return "ERROR";
+	case log_type::CRITICAL: return "CRITICAL";
 	default:				return "UNKNOWN";
 	}
 }
