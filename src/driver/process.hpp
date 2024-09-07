@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "../utils/tokens.hpp"
+#include "../utils/token.hpp"
 #include "../frontend/lexer.hpp"
 #include "../error/error.hpp"
 #include "../utils/logger.hpp"

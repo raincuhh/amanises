@@ -15,12 +15,18 @@ inline bool amanises::Utils::isNum(char c)
 	return false;
 }
 
-inline bool amanises::Utils::isWhitespace(char c)
+inline bool amanises::Utils::is_space(char c)
 {
-	return (
-		c == ' ' || c == '\n' || c == '\t' ||
-		c == '\v' || c == '\b' || c == '\r'
-	);
+	switch (c)
+	{
+	case ' ':
+	case '\t':
+	case '\r':
+	case '\n':
+		return true;
+	default:
+		return false;
+	}
 }
 
 bool amanises::Utils::isBoundaryCharacter(char c)

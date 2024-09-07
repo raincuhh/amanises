@@ -52,23 +52,40 @@ enum class token_kind {
 	TOK_BOOL,
 	TOK_VOID,
 
-	// operators
-	TOK_PLUS,
-	TOK_MINUS,
-	TOK_MULTIPLY,
-	TOK_DIVIDE,
-	TOK_ASSIGN,
-	TOK_EQUAL,
-	TOK_NOT_EQUAL,
-	TOK_LESS_THAN,
-	TOK_GREATER_THAN,
-	TOK_LESS_EQUAL,
-	TOK_GREATER_EQUAL,
-	TOK_AND,
-	TOK_OR,
-	TOK_NOT,
-	TOK_INCREMENT,
-	TOK_DECREMENT,
+	// operators arithmetic
+	TOK_PLUS,             // +
+	TOK_MINUS,            // -
+	TOK_MULTIPLY,         // *
+	TOK_DIVIDE,           // /
+	TOK_MODULO,           // %
+
+	// operators inc/dec
+	TOK_INCREMENT,        // ++
+	TOK_DECREMENT,        // --
+
+	// operators relational
+	TOK_EQUAL,            // ==
+	TOK_NOT_EQUAL,        // !=
+	TOK_LESS_THAN,        // <
+	TOK_GREATER_THAN,     // >
+	TOK_LESS_EQUAL,       // <=
+	TOK_GREATER_EQUAL,    // >=
+
+	// operators logical
+	TOK_AND,              // &&
+	TOK_OR,               // ||
+	TOK_NOT,              // !
+
+	// operators assign
+	TOK_ASSIGN,           // =
+	TOK_PLUS_ASSIGN,      // +=
+	TOK_MINUS_ASSIGN,     // -=
+	TOK_MULTIPLY_ASSIGN,  // *=
+	
+	// operator misc
+	TOK_MEMBER_ACCESS,    // .  as in class.member
+	TOK_POINTER_ACCESS,   // -> as in classInstance->member
+	TOK_SCOPE,            // :: as in stuff like namespace::class::member
 
 	// punctuation
 	TOK_SEMICOLON,        // ;
@@ -95,7 +112,6 @@ enum class token_kind {
 
 	// error handling
 	TOK_ERROR
-
 };
 
 struct Token

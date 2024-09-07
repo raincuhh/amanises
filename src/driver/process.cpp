@@ -40,14 +40,14 @@ void amanises::Process::init(char* argv[])
 	);
 	content.clear();
 
-	// begins tokenizing in here
-	if (!lexer->lex_content())
+	// tokenizing
+	if (!lexer->process_content())
 	{
 		m_logger->log(log_type::ERROR, std::string("Failed lexing tokenizing."));
 		exit(EXIT_FAILURE);
 	}
 
-	// get tokens after lexer has finished tokenizing
+	// get tokens
 	std::vector<Token> tokens = lexer->get_full_token_list();
 	lexer->debug_print_tokens(tokens);
 

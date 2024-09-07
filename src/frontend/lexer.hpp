@@ -8,8 +8,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../utils/tokens.hpp"
-#include "../utils/utils.hpp"
+#include "../utils/token.hpp"
 #include "../utils/logger.hpp"
 
 //context for the semantic expression checking later on
@@ -19,7 +18,6 @@ namespace amanises
 	class Lexer
 	{
 	public:
-		using Utils = amanises::Utils;
 		using Logger = amanises::Logger;
 
 		enum class lex_states
@@ -38,8 +36,7 @@ namespace amanises
 		};
 
 		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
-
-		bool lex_content();
+		bool process_content();
 
 		void debug_print_tokens(std::vector<Token>& tokens);
 		std::vector<Token> get_full_token_list() const { return std::move(full_tok_list); };
@@ -55,17 +52,27 @@ namespace amanises
 		size_t m_col;
 
 		std::vector<Token> full_tok_list;
+		std::unordered_map<std::string, token_kind> tokMap;
 
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
-		std::string trim_white_space(std::string& content);
 		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
+		
+		std::string trim_white_space(std::string& content);
 		std::string get_token_kind_str(const token_kind type);
 
 		void init_u_tok_map();
 
-		std::unordered_map<std::string, token_kind> tokMap;
+		//checks for base cases
+		bool is_buf_boundary_char(char _c);
+		bool is_space(char _c);
+		inline bool is_alpha(char _c);
+		inline bool is_alpha_num(char _c);
+		bool is_operator(const std::string_view& content, size_t& idx);
+		bool operator_peek_ahead(const std::string_view& content, size_t& idx, char to_check);
 
-		//checks for different cases
+		bool is_identifier(char _c);
+		bool is_digit(char _c);
+
 
 	};
 }
