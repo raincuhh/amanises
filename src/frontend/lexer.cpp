@@ -96,29 +96,32 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 			if (is_space(c))
 			{
-				std::cout << "entering whitespace state" << std::endl;
-				idx++;
-				//lex_state = lex_states::LEX_WHITESPACE; 
+				lex_state = lex_states::LEX_WHITESPACE; 
+				continue;
 			} 
 			else if (is_preproc(c))
 			{
-				std::cout << "entering preproc state" << std::endl;
 				lex_state = lex_states::LEX_PREPROC;
-				++idx;
 				continue;
 			}
+			/*
 			else if (c == '/')
 			{
 				if (peek_ahead_by_char(content, idx, '/'))
 				{
 					lex_state = lex_states::LEX_COMMENTS;
-					idx++;
+
 				}
 				else if (peek_ahead_by_char(content, idx, '*'))
 				{
 					lex_state = lex_states::LEX_COMMENTS;
 				}
+				else
+				{
+					lex_state = lex_states::LEX_OPERATOR;
+				}
 			}
+			*/
 			//else if (c == '/')
 			//{
 			//	if (idx + 1 < content.length() && content[idx + 1] == '/')
@@ -132,7 +135,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			
 			break;
 		case lex_states::LEX_PREPROC:
-			handle_state_preproc(content, idx, tok_buf, lex_state, tok_list);
+			handle_state_preproc(content, idx, c, tok_buf, lex_state, tok_list);
 			break;
 		case lex_states::LEX_KEYWORD:
 
@@ -160,13 +163,8 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 			break;
 		case lex_states::LEX_WHITESPACE:
-			while (idx < content.length() && is_space(content[idx]))
-			{
-				idx++;
-				std::cout << "whitspace" << std::endl;
-			}
-			lex_state = lex_states::LEX_INITIAL;
-			break;
+			handle_state_whitespace(content, idx, c, tok_buf, lex_state, tok_list);
+			continue;
 		default:
 
 			break;
@@ -577,11 +575,12 @@ bool amanises::Lexer::is_digit(char _c)
 	return std::isdigit(static_cast<unsigned char>(_c));
 }
 
-void amanises::Lexer::handle_state_preproc(const std::string_view& content, size_t& idx, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+void amanises::Lexer::handle_state_preproc(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
 	// clearing the buffer, and pushing # hopefully...
 	tok_buf.clear();
-	tok_buf.push_back('#');
+	tok_buf.push_back(c);
+	idx++;
 
 	while (idx < content.length() && is_alpha_num(content[idx]))
 	{
@@ -594,6 +593,17 @@ void amanises::Lexer::handle_state_preproc(const std::string_view& content, size
 	if (it != tokMap.end() && tok_buf == "#include")
 	{
 		tok_list.push_back(Token{ .kind = tokMap[tok_buf] });
+	}
+
+	lex_state = lex_states::LEX_INITIAL;
+}
+
+void amanises::Lexer::handle_state_whitespace(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
+{
+	while (idx < content.length() && is_space(content[idx]))
+	{
+		idx++;
+		//std::cout << "ws" << std::endl;
 	}
 
 	lex_state = lex_states::LEX_INITIAL;

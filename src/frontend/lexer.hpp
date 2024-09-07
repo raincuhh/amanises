@@ -76,7 +76,7 @@ namespace amanises
 		bool is_digit(char _c);
 
 
-		void handle_state_preproc(const std::string_view& content, size_t& idx, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
-		
+		void handle_state_preproc(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		void handle_state_whitespace(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 	};
 }
