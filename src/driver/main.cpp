@@ -8,13 +8,13 @@
 using Process = amanises::Process;
 using Logger = amanises::Logger;
 
-static bool init_compilation(char* argv[], Logger* m_logger)
+static bool amanises_compile(char* content[], Logger* m_logger)
 {
 	m_logger->log(log_type::INFO, std::string("Amanises compilation started."));
 
 	try
 	{
-		std::unique_ptr<Process> process = std::make_unique<Process>(argv, m_logger);
+		std::unique_ptr<Process> process = std::make_unique<Process>(content, m_logger);
 	}
 	catch (const std::exception& e)
 	{
@@ -69,5 +69,5 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	return init_compilation(argv, logger.get());
+	return amanises_compile(argv, logger.get());
 }

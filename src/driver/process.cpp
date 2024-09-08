@@ -17,7 +17,7 @@ void amanises::Process::init(char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	std::string content;
+	std::string src;
 	{
 		std::fstream input(filepath, std::ios::in);
 		if (!input)
@@ -27,18 +27,18 @@ void amanises::Process::init(char* argv[])
 
 		std::stringstream c_stream;
 		c_stream << input.rdbuf();
-		content = c_stream.str();
+		src = c_stream.str();
 	}
 
 	// starting lexing process
 	m_logger->log(log_type::INFO, std::string("Lexing processing started."));
 
 	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(
-		std::move(content), 
-		content.length(), 
+		std::move(src),
+		src.length(),
 		m_logger
 	);
-	content.clear();
+	src.clear();
 
 	// tokenizing
 	if (!lexer->process_content())

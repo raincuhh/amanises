@@ -28,9 +28,9 @@ namespace amanises
 			LEX_OPERATOR,
 			LEX_PUNCTUATION,
 			LEX_IDENTIFIER,
-			LEX_ERROR,
-			LEX_WHITESPACE
-			// might add states for stuff like preprocessor conditionals, etc.
+			LEX_LITERAL,
+			LEX_WHITESPACE,
+			LEX_ERROR
 		};
 
 		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
@@ -53,6 +53,7 @@ namespace amanises
 		std::unordered_map<std::string, token_kind> tokMap;
 
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
+		Token get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list);
 		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
 		
 		std::string trim_white_space(std::string& content);
@@ -67,7 +68,7 @@ namespace amanises
 		inline bool is_alpha(char c);
 		inline bool is_alpha_num(char c);
 		bool is_operator(const std::string_view& content, size_t& idx);
-		bool peek_ahead_by_char(const std::string_view& content, size_t& idx, char to_check);
+		bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
 		bool is_punctuator(char c);
 		bool is_identifier(char c);
 		bool is_digit(char c);

@@ -31,6 +31,7 @@ bool amanises::Lexer::process_content()
 		std::move(buf_tok_list.begin(), buf_tok_list.end(), std::back_inserter(full_tok_list));
 	}
 
+
 	// check if the full token list is still empty after tokenization
 	if (full_tok_list.empty())
 	{
@@ -75,24 +76,22 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 	for (size_t idx = 0; idx < content.length();)
 	{
+		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
+	
+		if (tok.kind != token_kind::TOK_EOF)
+		{
+			tok_list.push_back(tok);
+		}
+
+		idx++;
+		/*
 		char c = content[idx];
 
 		switch (lex_state)
 		{
 		case lex_states::LEX_INITIAL:
 
-			/*
-			TODO:
-			check for whitespace / complete
-			check for preproc / complete
-			check for comments / complete
-			check for data types
-			check for operator
-			check for punctuator
-			check for identifiers
-			check for literals
-			*/
-
+			
 			if (is_space(c))
 			{
 				lex_state = lex_states::LEX_WHITESPACE; 
@@ -138,10 +137,79 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			handle_state_whitespace(content, idx, c, tok_buf, lex_state, tok_list);
 			continue;
 		}
-		idx++;
+		*/
 	}
 
 	tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
+}
+
+Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list)
+{
+	while (idx < content.length())
+	{
+		char c = content[idx];
+
+		switch (lex_state)
+		{
+		case lex_states::LEX_INITIAL:
+			if (is_space(c))
+			{
+				lex_state = lex_states::LEX_WHITESPACE;
+				continue;
+			}
+			else if (is_preproc(c))
+			{
+				lex_state = lex_states::LEX_PREPROC;
+				continue;
+			}
+			else if (is_alpha(c) || c == '_')
+			{
+				lex_state = lex_states::LEX_IDENTIFIER;
+				continue;
+			}
+			else if (is_digit(c) || c == '"')
+			{
+				lex_state = lex_states::LEX_LITERAL;
+				continue;
+			}
+			else if (is_operator(content, idx))
+			{
+				lex_state = lex_states::LEX_OPERATOR;
+				continue;
+			}
+			else if (is_punctuator(c))
+			{
+				lex_state = lex_states::LEX_PUNCTUATION;
+				continue;
+			}
+
+
+			break;
+		case lex_states::LEX_PREPROC:
+			handle_state_preproc(content, idx, c, tok_buf, lex_state, tok_list);
+			break;
+		case lex_states::LEX_COMMENTS:
+			
+			break;
+		case lex_states::LEX_OPERATOR:
+			handle_state_operator(content, idx, c, tok_buf, lex_state, tok_list);
+			break;
+		case lex_states::LEX_PUNCTUATION:
+			handle_state_punctuator(content, idx, c, tok_buf, lex_state, tok_list);
+			break;
+		case lex_states::LEX_IDENTIFIER:
+			handle_state_identifier(content, idx, c, tok_buf, lex_state, tok_list);
+			break;
+		case lex_states::LEX_WHITESPACE:
+			handle_state_whitespace(content, idx, c, tok_buf, lex_state, tok_list);
+			break;
+		case lex_states::LEX_ERROR:
+			
+			break;
+		}
+	}
+
+	return Token();
 }
 
 std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& content, size_t max_chunk_size)
@@ -431,31 +499,31 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	switch (c)
 	{
 	case '+':
-		if (peek_ahead_by_char(content, idx, '+'))
+		if (peek_ahead(content, idx, '+'))
 		{
 			return true;
 		}
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '-':
-		if (peek_ahead_by_char(content, idx, '-'))
+		if (peek_ahead(content, idx, '-'))
 		{
 			return true;
 		}
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
-		if (peek_ahead_by_char(content, idx, '>'))
+		if (peek_ahead(content, idx, '>'))
 		{
 			return true;
 		}
 		return true;
 	case '*':
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
@@ -464,38 +532,38 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	case '%':
 		return true;
 	case '=':
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '!':
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '<':
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
 
 		return true;
 	case '>':
-		if (peek_ahead_by_char(content, idx, '='))
+		if (peek_ahead(content, idx, '='))
 		{
 			return true;
 		}
 		return true;
 	case '&':
-		if (peek_ahead_by_char(content, idx, '&'))
+		if (peek_ahead(content, idx, '&'))
 		{
 			return true;
 		}
 		return true;
 	case '|':
-		if (peek_ahead_by_char(content, idx, '|'))
+		if (peek_ahead(content, idx, '|'))
 		{
 			return true;
 		}
@@ -505,7 +573,7 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	}
 }
 
-bool amanises::Lexer::peek_ahead_by_char(const std::string_view& content, size_t& idx, char to_check)
+bool amanises::Lexer::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
 {
 	if (idx + 1 < content.size() && content[idx + 1] == to_check)
 	{
@@ -563,6 +631,10 @@ void amanises::Lexer::handle_state_preproc(const std::string_view& content, size
 	{
 		tok_list.push_back(Token{ .kind = tokMap[tok_buf] });
 	}
+	else
+	{
+		tok_list.push_back(Token{ .kind = token_kind::TOK_ERROR, .val = tok_buf });
+	}
 
 	lex_state = lex_states::LEX_INITIAL;
 }
@@ -584,7 +656,7 @@ void amanises::Lexer::handle_state_whitespace(const std::string_view& content, s
 	while (idx < content.length() && is_space(content[idx]))
 	{
 		idx++;
-		//std::cout << "ws" << std::endl;
+		std::cout << "ws" << std::endl;
 	}
 
 	lex_state = lex_states::LEX_INITIAL;
