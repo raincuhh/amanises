@@ -8,9 +8,10 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <assert.h>
 
-#include "../utils/token.hpp"
-#include "../utils/logger.hpp"
+#include "token.hpp"
+#include "../logger.hpp"
 
 //context for the semantic expression checking later on
 
@@ -61,7 +62,9 @@ namespace amanises
 		
 		std::string trim_white_space(std::string& content);
 		std::string trim_word(const std::string& str);
-		std::string get_token_kind_str(const token_kind type);
+
+		std::string token_kind_to_str(const token_kind type);
+		std::string token_to_str(Token* token);
 
 		void init_token_map();
 

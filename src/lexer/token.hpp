@@ -118,6 +118,6 @@ struct Token
 {
 	token_kind kind = token_kind::TOK_EOF;
 	std::optional<std::string> val = std::nullopt;
-	//size_t line = 0;
-	//size_t col = 0;
+	size_t line = 0;
+	size_t col = 0;
 };

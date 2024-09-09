@@ -45,19 +45,9 @@ void amanises::Lexer::debug_print_tokens(std::vector<Token>& tokens)
 {
 	if (tokens.empty()) return;
 
-	for (const auto& token : tokens)
+	for (Token& token : tokens)
 	{
-		std::cout << "TOK(t: " << get_token_kind_str(token.kind) << ", v: ";
-
-		if (token.val)
-		{
-			std::cout << token.val.value();
-		}
-		else
-		{
-			std::cout << "nulloptr";
-		}
-		std::cout << ")" << std::endl;
+		std::cout << token_to_str(&token) << std::endl;
 	}
 }
 
@@ -76,7 +66,9 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	for (size_t idx = 0; idx < content.length();)
 	{
 		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
+
 		tok_list.push_back(tok);
+		tok_buf.clear();
 
 		idx++;
 	}
@@ -127,7 +119,6 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 				lex_state = lex_states::LEX_ERROR;
 				continue;
 			}
-			break;
 		case lex_states::LEX_OPERATOR:
 			accumulate_operator_token(content, idx, c, tok_buf, lex_state, tok_list);
 			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
@@ -249,7 +240,7 @@ std::string amanises::Lexer::trim_word(const std::string& str)
 	return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }
 
-std::string amanises::Lexer::get_token_kind_str(const token_kind type)
+std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 {
 	switch (type)
 	{
@@ -357,6 +348,21 @@ std::string amanises::Lexer::get_token_kind_str(const token_kind type)
 	case token_kind::TOK_ERROR:            return "ERROR";
 	default:                               return "UNDEFINED";
 	}
+}
+
+std::string amanises::Lexer::token_to_str(Token* token)
+{
+	const std::string tok_kind = token_kind_to_str(token->kind);
+
+	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
+
+	const std::string tok_template =
+		"TOK <kind=" + tok_kind +
+		", val=" + tok_val +
+		", line=" + std::to_string(token->line) +
+		", col=" + std::to_string(token->col) + ">";
+
+	return tok_template;
 }
 
 void amanises::Lexer::init_token_map()

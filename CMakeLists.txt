@@ -9,7 +9,7 @@ project ("amanises")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable (amanises "src/driver/main.cpp"  "src/utils/logger.cpp"  "src/frontend/parser.cpp" "src/utils/utils.cpp" "src/driver/process.cpp" "src/error/error.cpp" "src/frontend/lexer.cpp")
+add_executable (amanises "src/main.cpp" "src/error.cpp" "src/logger.cpp" "src/compilerPipeline.cpp" "src/compiler/compile.cpp" "src/compiler/flowgraph.cpp" "src/compiler/codegen/assembler.cpp" "src/lexer/helper.cpp" "src/lexer/lexer.cpp" "src/parser/parser.cpp" "src/parser/ast.cpp" "src/driver.cpp")
 
 set_target_properties(amanises PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -17,9 +17,9 @@ set_target_properties(amanises PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}
 )
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # For static libraries
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # For shared libraries
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})      # For executables
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # for static libraries
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)  # for shared libraries
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})      # for executables
 
 set(CMAKE_OBJECT_PATH ${CMAKE_BINARY_DIR}/out)
 
