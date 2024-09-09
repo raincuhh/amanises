@@ -58,7 +58,9 @@ namespace amanises
 		Token get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list);
 		token_kind determine_tok_kind(std::string& tok_buf);
 		token_kind determine_literal_tok_kind(std::string& tok_buf);
-		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
+		void clear_token_buffer(std::string& tok_buf) { tok_buf.clear(); };
+
+		std::vector<std::string> split_to_chunk_buffers(const std::string& content, size_t max_chunk_size);
 		
 		std::string trim_white_space(std::string& content);
 		std::string trim_word(const std::string& str);
@@ -78,6 +80,8 @@ namespace amanises
 		inline bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
 		bool is_punctuator(char c);
 		bool is_identifier(char c);
+		bool is_potential_identifier_start(char c);
+		bool is_potential_identifier_char(char c);
 		bool is_digit(char c);
 
 		void accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);

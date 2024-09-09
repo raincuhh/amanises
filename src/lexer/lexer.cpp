@@ -1,5 +1,12 @@
 #include "lexer.hpp"
 
+// #include "testLib.h"
+//
+//int main() {
+//	print("Hello World!");
+//	return 0;
+//}
+
 amanises::Lexer::Lexer(std::string content, size_t _contentLen, Logger* logger) :
 	m_logger(logger),
 	m_content(std::move(content)),
@@ -18,9 +25,9 @@ bool amanises::Lexer::tokenize_content()
 {
 	// chunking
 	const size_t buf_size = 8192; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
-	std::vector<std::string> c_buffs = split_to_buffers(m_content, buf_size);
+	std::vector<std::string> chnk_bufs = split_to_chunk_buffers(m_content, buf_size);
 
-	for (const std::string& buf : c_buffs)
+	for (const std::string& buf : chnk_bufs)
 	{
 		// tokenize to buf token list
 		std::vector<Token> buf_tok_list;
@@ -56,19 +63,12 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	lex_states lex_state = lex_states::LEX_INITIAL;
 	std::string tok_buf;
 
-	// #include "testLib.h"
-	//
-	//int main() {
-	//	print("Hello World!");
-	//	return 0;
-	//}
-
 	for (size_t idx = 0; idx < content.length();)
 	{
 		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
 
 		tok_list.push_back(tok);
-		tok_buf.clear();
+		clear_token_buffer(tok_buf);
 
 		idx++;
 	}
@@ -195,7 +195,7 @@ token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf)
 	return token_kind::TOK_ERROR;
 }
 
-std::vector<std::string> amanises::Lexer::split_to_buffers(const std::string& content, size_t max_chunk_size)
+std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::string& content, size_t max_chunk_size)
 {
 	// TODO: edgecases to solve:
 	// tracking syntax boundaries. as in open and closed delimiters.
@@ -604,6 +604,23 @@ bool amanises::Lexer::is_identifier(char c)
 	return false;
 }
 
+bool amanises::Lexer::is_potential_identifier_start(char c)
+{
+	return (c >= 'a' && c <= 'z')
+		|| (c >= 'A' && c <= 'Z')
+		|| c == '_'
+		|| (c >= 128);
+}
+
+bool amanises::Lexer::is_potential_identifier_char(char c)
+{
+	return (c >= 'a' && c <= 'z')
+		|| (c >= 'A' && c <= 'Z')
+		|| (c >= '0' && c <= '9')
+		|| c == '_'
+		|| (c >= 128);
+}
+
 bool amanises::Lexer::is_digit(char c)
 {
 	return std::isdigit(static_cast<unsigned char>(c));
@@ -611,7 +628,7 @@ bool amanises::Lexer::is_digit(char c)
 
 void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
-	tok_buf.clear();
+	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	idx++;
 
@@ -620,24 +637,44 @@ void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, 
 		tok_buf.push_back(content[idx]);
 		idx++;
 	}
+
 	lex_state = lex_states::LEX_INITIAL;
 }
 
 void amanises::Lexer::accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
-	
+	clear_token_buffer(tok_buf);
+	tok_buf.push_back(c);
+	idx++;
+
+	lex_state = lex_states::LEX_INITIAL;
 }
 
 void amanises::Lexer::accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
+	clear_token_buffer(tok_buf);
+	tok_buf.push_back(c);
+	idx++;
+
+	lex_state = lex_states::LEX_INITIAL;
 }
 
 void amanises::Lexer::accumulate_identifier_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
+	clear_token_buffer(tok_buf);
+	tok_buf.push_back(c);
+	idx++;
+
+	lex_state = lex_states::LEX_INITIAL;
 }
 
 void amanises::Lexer::accumulate_literal_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
+	clear_token_buffer(tok_buf);
+	tok_buf.push_back(c);
+	idx++;
+
+	lex_state = lex_states::LEX_INITIAL;
 }
 
 void amanises::Lexer::handle_comments(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
