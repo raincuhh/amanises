@@ -116,8 +116,8 @@ enum class token_kind {
 
 struct Token
 {
-	token_kind kind;
-	std::optional<std::string> val;
-	size_t line;
-	size_t col;
+	token_kind kind = token_kind::TOK_EOF;
+	std::optional<std::string> val = std::nullopt;
+	//size_t line = 0;
+	//size_t col = 0;
 };

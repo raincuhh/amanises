@@ -23,13 +23,12 @@ namespace amanises
 		enum class lex_states
 		{
 			LEX_INITIAL = 0,
-			LEX_PREPROC,
-			LEX_COMMENTS,
 			LEX_OPERATOR,
 			LEX_PUNCTUATION,
 			LEX_IDENTIFIER,
 			LEX_LITERAL,
-			LEX_WHITESPACE,
+			LEX_PREPROC,
+			LEX_COMMENTS,
 			LEX_ERROR
 		};
 
@@ -54,6 +53,7 @@ namespace amanises
 
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
 		Token get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list);
+		token_kind determine_tok_kind(std::string& tok_buf);
 		std::vector<std::string> split_to_buffers(const std::string& content, size_t max_chunk_size);
 		
 		std::string trim_white_space(std::string& content);
