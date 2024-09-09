@@ -41,7 +41,7 @@ void amanises::Process::init(char* argv[])
 	src.clear();
 
 	// tokenizing
-	if (!lexer->process_content())
+	if (!lexer->tokenize_content())
 	{
 		m_logger->log(log_type::ERROR, std::string("Failed lexing tokenizing."));
 		exit(EXIT_FAILURE);
@@ -52,7 +52,6 @@ void amanises::Process::init(char* argv[])
 	lexer->debug_print_tokens(tokens);
 
 	m_logger->log(log_type::INFO, std::string("Lexing processing finished."));
-
 
 	// starting parsing/abstract syntax tree/ast process
 	//m_logger->log(log_type::INFO, std::string("Ast parsing started."));
