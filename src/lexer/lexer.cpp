@@ -67,6 +67,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	{
 		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
 
+		std::cout << tok_buf << std::endl;
 		tok_list.push_back(tok);
 		clear_token_buffer(tok_buf);
 
@@ -200,6 +201,7 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 	// TODO: edgecases to solve:
 	// tracking syntax boundaries. as in open and closed delimiters.
 	// tokenization marks kinda
+	// dont know if it is actually something i need to solve, just test this later
 
 	std::vector<std::string> chunks;
 	size_t content_size = content.size();
@@ -446,6 +448,19 @@ void amanises::Lexer::init_token_map()
 	};
 }
 
+void amanises::Lexer::update_line_col()
+{
+}
+
+inline bool amanises::Lexer::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
+{
+	if (idx + 1 < content.size() && content[idx + 1] == to_check)
+	{
+		return true;
+	}
+	return false;
+}
+
 inline bool amanises::Lexer::is_chunk_buf_boundary_char(char c)
 {
 	switch (c)
@@ -489,7 +504,7 @@ inline bool amanises::Lexer::is_alpha_num(char c)
 	return std::isalnum(static_cast<unsigned char>(c));
 }
 
-bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
+inline bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 {
 	char c = content[idx];
 
@@ -570,16 +585,7 @@ bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
 	}
 }
 
-inline bool amanises::Lexer::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
-{
-	if (idx + 1 < content.size() && content[idx + 1] == to_check)
-	{
-		return true;
-	}
-	return false;
-}
-
-bool amanises::Lexer::is_punctuator(char c)
+inline bool amanises::Lexer::is_punctuator(char c)
 {
 	switch (c)
 	{
@@ -599,12 +605,8 @@ bool amanises::Lexer::is_punctuator(char c)
 	}
 }
 
-bool amanises::Lexer::is_identifier(char c)
-{
-	return false;
-}
 
-bool amanises::Lexer::is_potential_identifier_start(char c)
+bool amanises::Lexer::is_identifier_start(char c)
 {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
@@ -612,7 +614,7 @@ bool amanises::Lexer::is_potential_identifier_start(char c)
 		|| (c >= 128);
 }
 
-bool amanises::Lexer::is_potential_identifier_char(char c)
+bool amanises::Lexer::is_identifier_char(char c)
 {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
@@ -621,9 +623,19 @@ bool amanises::Lexer::is_potential_identifier_char(char c)
 		|| (c >= 128);
 }
 
-bool amanises::Lexer::is_digit(char c)
+inline bool amanises::Lexer::is_digit(char c)
 {
 	return std::isdigit(static_cast<unsigned char>(c));
+}
+
+bool amanises::Lexer::is_literal_start(char c)
+{
+	return (is_digit(c) || c == '"');
+}
+
+bool amanises::Lexer::is_literal_char(char c)
+{
+	return (is_digit(c) || c == '.' || is_identifier_char(c)); // identifier chars can be in stuff like strings etc.
 }
 
 void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
@@ -656,6 +668,14 @@ void amanises::Lexer::accumulate_punctuation_token(const std::string_view& conte
 	tok_buf.push_back(c);
 	idx++;
 
+	while (idx < content.length() && is_punctuator(c))
+	{
+		tok_buf.push_back(c);
+		idx++;
+
+	}
+	std::cout << tok_buf << std::endl;
+
 	lex_state = lex_states::LEX_INITIAL;
 }
 
@@ -672,8 +692,34 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+
+	bool is_string_literal = (c == '"');
 	idx++;
 
+	while (idx < content.length())
+	{
+		c = content[idx];
+
+		if (is_string_literal)
+		{
+			tok_buf.push_back(c);
+			idx++;
+
+			if (c == '"')
+			{
+				break;
+			}
+		}
+		else if (is_literal_char(c))
+		{
+			tok_buf.push_back(c);
+			idx++;
+		}
+		else
+		{
+			break;
+		}
+	}
 	lex_state = lex_states::LEX_INITIAL;
 }
 
@@ -689,88 +735,3 @@ void amanises::Lexer::handle_white_space(const std::string_view& content, size_t
 	}
 	lex_state = lex_states::LEX_INITIAL;
 }
-
-
-
-
-/*
-std::vector<Token> amanises::LexicalAnalyzer::tokenize(const std::string& source)
-{
-	std::vector<Token> tokens;
-	std::string buf;
-
-
-
-	tokens.push_back({ .type = TokenType::TOK_SOF });
-
-	for (size_t idx = 0; idx < source.length();)
-	{
-		char c = source.at(idx);
-
-		if (std::isalpha(c))
-		{
-			buf.clear();
-			do
-			{
-				buf.push_back(c);
-				++idx;
-				if (idx < source.length())
-				{
-					c = source.at(idx);
-				}
-
-			} while (idx < source.length() && std::isalnum(c));
-
-			if (buf == "return")
-			{
-				tokens.push_back({.type = TokenType::TOK_RETURN});
-				buf.clear();
-			}
-			else
-			{
-				std::cerr << "you messed up, buf: " << buf << std::endl;
-				exit(EXIT_FAILURE);
-			}
-			continue;
-		}
-
-		else if (std::isdigit(c))
-		{
-			buf.clear();
-			do
-			{
-				buf.push_back(c);
-				++idx;
-				if (idx < source.length())
-				{
-					c = source.at(idx);
-				}
-			} while (idx < source.length() && std::isdigit(c));
-
-			tokens.push_back({ .type = TokenType::TOK_INTEGER_LIT, .value = buf });
-			//buf.clear();
-			continue;
-		}
-
-		else if (c == ';')
-		{
-			tokens.push_back({ .type = TokenType::TOK_SEMICOLON });
-			idx++;
-		}
-
-		else if (std::isspace(c))
-		{
-			idx++;
-		}
-
-		else
-		{
-			std::cerr << "you might have messed up major" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-	}
-	tokens.push_back({ .type = TokenType::TOK_EOF });
-
-	return tokens;
-}
-*/

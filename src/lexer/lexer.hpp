@@ -69,20 +69,21 @@ namespace amanises
 		std::string token_to_str(Token* token);
 
 		void init_token_map();
+		void update_line_col();
+		inline bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
 
-		//checks for base cases
 		inline bool is_chunk_buf_boundary_char(char c);
 		inline bool is_space(char c);
 		inline bool is_preproc(char c);
 		inline bool is_alpha(char c);
 		inline bool is_alpha_num(char c);
-		bool is_operator(const std::string_view& content, size_t& idx);
-		inline bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
-		bool is_punctuator(char c);
-		bool is_identifier(char c);
-		bool is_potential_identifier_start(char c);
-		bool is_potential_identifier_char(char c);
-		bool is_digit(char c);
+		inline bool is_operator(const std::string_view& content, size_t& idx);
+		inline bool is_punctuator(char c);
+		bool is_identifier_start(char c);
+		bool is_identifier_char(char c);
+		inline bool is_digit(char c);
+		bool is_literal_start(char c);
+		bool is_literal_char(char c);
 
 		void accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);

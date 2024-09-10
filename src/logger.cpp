@@ -1,12 +1,12 @@
 #include "logger.hpp"
 
-amanises::Logger::Logger(std::string& filepath) :
-	mLogFilepath(filepath)
+amanises::Logger::Logger(std::string& file_path) :
+	m_log_file_path(file_path)
 {
-	log_file.open(filepath, std::ios::app);
+	log_file.open(file_path, std::ios::app);
 	if (!log_file.is_open())
 	{
-		log(log_type::ERROR, std::string("Failed opening logfile") + filepath);
+		log(log_type::ERROR, std::string("Failed opening logfile: ") + file_path);
 	}
 }
 
@@ -36,7 +36,7 @@ void amanises::Logger::log(log_type type, std::string msg)
 
 bool amanises::Logger::clear_logs()
 {
-	if (remove(mLogFilepath.c_str()))
+	if (remove(m_log_file_path.c_str()))
 	{
 		return true;
 	}
