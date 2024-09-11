@@ -1,4 +1,4 @@
 
-int add(a: int, b: int) {
+i16 add(a: i8, b: i8) {
 	return a + b;
 }

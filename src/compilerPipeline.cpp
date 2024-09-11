@@ -12,8 +12,10 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 
 	std::vector<std::pair<std::string, std::vector<Token>>> src_and_tok_lists;
 
+	bool debug = false;
 
-	// initial processing of source files, and the lexing of said files
+
+	// initial processing of source files, and the tokenization of said source files
 	for (size_t i = 1; i < argc; i++)
 	{
 		const char* src_path = argv[i];
@@ -29,17 +31,24 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 	}
 
 	// debug printing 
-	for (auto& pair : src_and_tok_lists)
+	if (debug)
 	{
-		std::vector<Token> tokens = pair.second;
-		std::string src_name = pair.first;
+		for (auto& pair : src_and_tok_lists)
+		{
+			std::vector<Token> tokens = pair.second;
+			std::string src_name = pair.first;
 
-		//std::cout << src_name << std::endl;
-		//lexer->print_tokens_verbose(tokens); 
-		//std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
+			lexer->print_tokens_non_verbose(tokens);
+			std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
+		}
 	}
-
-	// starting parsing/abstract syntax tree/ast process
+	
+	// starting the processing of src file parsing into ast
+	
+	for (size_t i = 0; i < src_and_tok_lists.size(); i++)
+	{
+		std::cout << src_and_tok_lists.size() << std::endl;
+	}
 	//m_logger->log(log_type::INFO, std::string("Ast parsing started."));
 	//m_logger->log(log_type::INFO, std::string("Ast parsing finished."));
 }

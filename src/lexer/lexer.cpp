@@ -71,7 +71,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 		if (!tok_buf.empty()) {
 
-			std::cout << tok_buf << std::endl; //debug
+			//std::cout << tok_buf << std::endl; //debug
 			tok_list.push_back(tok);
 			clear_token_buffer(tok_buf);
 		}
