@@ -36,6 +36,7 @@ bool amanises::Lexer::tokenize_content()
 		// move buf token list to full token list
 		full_tok_list.reserve(full_tok_list.size() + buf_tok_list.size());
 		std::move(buf_tok_list.begin(), buf_tok_list.end(), std::back_inserter(full_tok_list));
+		//delete buf_tok_list;
 	}
 
 	// check if the full token list is still empty after tokenization
@@ -92,12 +93,12 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 				lex_state = lex_states::LEX_WHITE_SPACE;
 				break;
 			}
-			else if (is_alpha(c) || c == '_')
+			else if (is_identifier_start(c))
 			{
 				lex_state = lex_states::LEX_IDENTIFIER;
 				continue;
 			}
-			else if (is_digit(c) || c == '"')
+			else if (is_literal_start(c))
 			{
 				lex_state = lex_states::LEX_LITERAL;
 				continue;
@@ -110,8 +111,6 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 			else if (is_punctuator(c))
 			{
 				lex_state = lex_states::LEX_PUNCTUATION;
-				//accumulate_punctuation_token(content, idx, c, tok_buf, lex_state, tok_list);
-				//return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
 				continue;
 			}
 			else if (is_preproc(c))
@@ -124,6 +123,7 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 				lex_state = lex_states::LEX_ERROR;
 				continue;
 			}
+			break;
 		case lex_states::LEX_OPERATOR:
 			accumulate_operator_token(content, idx, c, tok_buf, lex_state, tok_list);
 			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
@@ -668,8 +668,6 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 
 void amanises::Lexer::accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
-	//std::cout << c << std::endl;
-	//std::cout << "entered punctuation state accumulation" << std::endl;
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	idx++;
@@ -690,6 +688,12 @@ void amanises::Lexer::accumulate_identifier_token(const std::string_view& conten
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	idx++;
+
+	while (idx < content.length() && is_identifier_char(c == content[idx]))
+	{
+		tok_buf.push_back(c); //content[idx]
+		idx++;
+	}
 
 	lex_state = lex_states::LEX_INITIAL;
 }
