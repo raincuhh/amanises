@@ -1,6 +1,8 @@
 #include "fnd.ama";
 
-1293921
-1.239
+int main() {
+	int integer_literal_test = 4321;
+	float float_literal_test = 4.213;
 
-int main;
+	printf("Hello World!");
+}

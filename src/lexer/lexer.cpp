@@ -45,7 +45,6 @@ bool amanises::Lexer::tokenize_content()
 		m_logger->log(log_type::ERROR, "Full token list empty after tokenization.");
 		return false; 
 	}
-
 	return true;
 }
 
@@ -363,10 +362,10 @@ std::string amanises::Lexer::token_to_str(Token* token)
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
 	const std::string tok_template =
-		"TOK <kind=" + tok_kind +
-		", val=" + tok_val +
-		", line=" + std::to_string(token->line) +
-		", col=" + std::to_string(token->col) + ">";
+		"TOK <kind=`" + tok_kind + "`" +
+		", val=`" + tok_val + "`" +
+		", line=`" + std::to_string(token->line) + "`" +
+		", col=`" + std::to_string(token->col) + "`>";
 
 	return tok_template;
 }
