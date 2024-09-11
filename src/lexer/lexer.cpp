@@ -2,7 +2,6 @@
 
 amanises::Lexer::Lexer(Logger* logger) :
 	m_logger(logger),
-	//m_content(std::move(content)),
 	m_cur_line(),
 	m_cur_col(),
 	m_tok_map()
@@ -24,8 +23,8 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 
 	file_tok_list.push_back(Token{ .kind = token_kind::TOK_SOF });
 
-	// chunking
-	std::vector<std::string> chunk_bufs = split_to_chunk_buffers(src, buf_size);
+	// splitting the source into chunks of 8192
+	std::vector<std::string> chunk_bufs = split_to_chunk_buffers(std::move(src), buf_size);
 	for (const std::string& buf : chunk_bufs)
 	{
 		// tokenize to buf token list, and move it to the full token list
@@ -72,7 +71,7 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 
 		if (!tok_buf.empty()) {
 
-			std::cout << tok_buf << std::endl;
+			std::cout << tok_buf << std::endl; //debug
 			tok_list.push_back(tok);
 			clear_token_buffer(tok_buf);
 		}
@@ -153,7 +152,6 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 
 token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
 {
-	// make sure the word doesnt contain any hidden chars
 	tok_buf = trim_word(tok_buf);
 
 	auto it = m_tok_map.find(tok_buf);
@@ -215,7 +213,7 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 		// get the chunk
 		std::string chunk = content.substr(start, end - start);
 		chunks.push_back(chunk);
-		std::cout << "chunkSize: " << content_size << std::endl;
+		//std::cout << "chunkSize: " << content_size << std::endl; // debug
 
 		start = end;
 	}
@@ -224,8 +222,8 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 
 std::string amanises::Lexer::trim_white_space(std::string& content)
 {
+	// reserve and erase space on content if the content has a space at a specific char
 	content.reserve(content.size());
-
 	content.erase(std::remove_if(content.begin(), content.end(), [](char c) {
 		return std::isspace(c);
 		}), content.end());
@@ -270,9 +268,21 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	case token_kind::TOK_DELETE:           return "DELETE";
 
 	// data types
-	case token_kind::TOK_INT:              return "INT";
-	case token_kind::TOK_FLOAT:            return "FLOAT";
-	case token_kind::TOK_DOUBLE:           return "DOUBLE";
+	case token_kind::TOK_I8:               return "I8";
+	case token_kind::TOK_I16:              return "I16";
+	case token_kind::TOK_I32:              return "I32";
+	case token_kind::TOK_I64:              return "I64";
+	case token_kind::TOK_I128:             return "I128";
+
+	case token_kind::TOK_U8:               return "U8";
+	case token_kind::TOK_U16:              return "U16";
+	case token_kind::TOK_U32:              return "U32";
+	case token_kind::TOK_U64:              return "U64";
+	case token_kind::TOK_U128:             return "U128";
+
+	case token_kind::TOK_F32:              return "F32";
+	case token_kind::TOK_F64:              return "F64";
+
 	case token_kind::TOK_CHAR:             return "CHAR";
 	case token_kind::TOK_STRING:           return "STRING";
 	case token_kind::TOK_BOOL:             return "BOOL";
@@ -360,10 +370,10 @@ std::string amanises::Lexer::token_to_str_verbose(Token* token)
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
 	const std::string tok_template =
-		"TOK <kind=`" + tok_kind + "`" +
-		", val=`" + tok_val + "`" +
-		", line=`" + std::to_string(token->line) + "`" +
-		", col=`" + std::to_string(token->col) + "`>";
+		"Tok <k=`" + tok_kind + "`" +
+		", v=`" + tok_val + "`" +
+		", l=`" + std::to_string(token->line) + "`" +
+		", c=`" + std::to_string(token->col) + "`>";
 
 	return tok_template;
 }
@@ -374,8 +384,8 @@ std::string amanises::Lexer::token_to_str_non_verbose(Token* token)
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
 	const std::string tok_template =
-		"Tok <K=`" + tok_kind + "`" +
-		", V=`" + tok_val + "`>";
+		"Tok <k=`" + tok_kind + "`" +
+		", v=`" + tok_val + "`>";
 
 	return tok_template;
 }
@@ -452,9 +462,23 @@ void amanises::Lexer::init_token_map()
 		{ "delete", token_kind::TOK_DELETE },
 
 		// data Types
-		{ "int", token_kind::TOK_INT },
-		{ "float", token_kind::TOK_FLOAT },
-		{ "double", token_kind::TOK_DOUBLE },
+		
+		// Data types
+		{ "i8", token_kind::TOK_I8 },
+		{ "i16", token_kind::TOK_I16 },
+		{ "i32", token_kind::TOK_I32 },
+		{ "i64", token_kind::TOK_I64 },
+		{ "i128", token_kind::TOK_I128 },
+
+		{ "u8", token_kind::TOK_U8 },
+		{ "u16", token_kind::TOK_U16 },
+		{ "u32", token_kind::TOK_U32 },
+		{ "u64", token_kind::TOK_U64 },
+		{ "u128", token_kind::TOK_U128 },
+
+		{ "f32", token_kind::TOK_F32 },
+		{ "f64", token_kind::TOK_F64 },
+
 		{ "char", token_kind::TOK_CHAR },
 		{ "string", token_kind::TOK_STRING },
 		{ "bool", token_kind::TOK_BOOL },

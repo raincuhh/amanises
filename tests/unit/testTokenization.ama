@@ -8,11 +8,11 @@ class test_class {
 }
 
 int main() {
-	int integer_literal_test = 4321;
-	float float_literal_test = 4.213;
+	i16 integer_literal_test = 4321;
+	f32 float_literal_test = 4.213;
 
-	int a = 1;
-	int b = a++;
+	i8 a = 1;
+	i8 b = a++;
 	printf(b);
 
 	printf("Hello World!");

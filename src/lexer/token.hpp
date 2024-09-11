@@ -49,9 +49,25 @@ enum class token_kind {
 	TOK_DELETE,
 
 	// data types
-	TOK_INT,
-	TOK_FLOAT,
-	TOK_DOUBLE,
+
+	// signed ints
+	TOK_I8,
+	TOK_I16,
+	TOK_I32,
+	TOK_I64,
+	TOK_I128,
+
+	// unsigned ints
+	TOK_U8,
+	TOK_U16,
+	TOK_U32,
+	TOK_U64,
+	TOK_U128,
+
+	// signed floats
+	TOK_F32,
+	TOK_F64,
+
 	TOK_CHAR,
 	TOK_STRING,
 	TOK_BOOL,

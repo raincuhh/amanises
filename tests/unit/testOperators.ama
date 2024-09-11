@@ -1,6 +1,6 @@
 
 int main() {
-	int a, b, c, d;
+	i8 a, b, c, d;
 	a = 1;
 	b = 2;
 	c = 4;

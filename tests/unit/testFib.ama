@@ -1,6 +1,6 @@
 
 int main() {
-	int x, y, z;
+	i16 x, y, z;
 
 	while (1) {
 		x = 0;
