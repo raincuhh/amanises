@@ -35,30 +35,23 @@ namespace amanises
 			LEX_ERROR
 		};
 
-		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
-		bool tokenize_content();
+		explicit Lexer(Logger* _logger);
+		std::vector<Token> tokenize_source_file(std::string source);
 
 		void print_tokens_verbose(std::vector<Token>& tokens);
 		void print_tokens_non_verbose(std::vector<Token>& tokens);
-		std::vector<Token> get_full_token_list() const { return std::move(full_tok_list); };
 	private:
 		Logger* m_logger;
+		std::unordered_map<std::string, token_kind> m_tok_map;
 
-		std::string m_content;
-		//std::string_view mContentView;
-		
-		size_t m_content_len;
-		size_t m_cursor;
-		size_t m_line;
-		size_t m_col;
-
-		std::vector<Token> full_tok_list;
-		std::unordered_map<std::string, token_kind> tokMap;
+		size_t m_cur_line;
+		size_t m_cur_col;
 
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
 		Token get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list);
 		token_kind determine_tok_kind(std::string& tok_buf);
 		token_kind determine_literal_tok_kind(std::string& tok_buf);
+
 		void clear_token_buffer(std::string& tok_buf) { tok_buf.clear(); };
 
 		std::vector<std::string> split_to_chunk_buffers(const std::string& content, size_t max_chunk_size);
@@ -71,7 +64,7 @@ namespace amanises
 		std::string token_to_str_non_verbose(Token* token);
 
 		void init_token_map();
-		void update_line_col();
+		void update_line_col(const std::string_view& content, size_t& idx);
 		inline bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
 
 		inline bool is_chunk_buf_boundary_char(char c);
@@ -92,6 +85,7 @@ namespace amanises
 		void accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void accumulate_identifier_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void accumulate_literal_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
+		
 		void handle_comments(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void handle_white_space(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 	};

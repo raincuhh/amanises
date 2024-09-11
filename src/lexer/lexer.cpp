@@ -1,51 +1,49 @@
 #include "lexer.hpp"
 
-// #include "testLib.h"
-//
-//int main() {
-//	print("Hello World!");
-//	return 0;
-//}
-
-amanises::Lexer::Lexer(std::string content, size_t _contentLen, Logger* logger) :
+amanises::Lexer::Lexer(Logger* logger) :
 	m_logger(logger),
-	m_content(std::move(content)),
-	m_content_len(),
-	m_cursor(),
-	m_line(),
-	m_col(),
-
-	full_tok_list(),
-	tokMap()
+	//m_content(std::move(content)),
+	m_cur_line(),
+	m_cur_col(),
+	m_tok_map()
 {
 	init_token_map();
 }
 
-bool amanises::Lexer::tokenize_content()
+std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 {
-	// chunking
-	const size_t buf_size = 8192; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
-	std::vector<std::string> chnk_bufs = split_to_chunk_buffers(m_content, buf_size);
+	std::vector<Token> file_tok_list;
+	const size_t buf_size = 8192;
+	size_t line = 1;
+	size_t col = 0; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
 
-	for (const std::string& buf : chnk_bufs)
+	m_cur_line = line;
+	m_cur_col = col;
+
+	file_tok_list.push_back(Token{ .kind = token_kind::TOK_SOF });
+
+	// chunking
+	std::vector<std::string> chunk_bufs = split_to_chunk_buffers(src, buf_size);
+	for (const std::string& buf : chunk_bufs)
 	{
-		// tokenize to buf token list
+		// tokenize to buf token list, and move it to the full token list
 		std::vector<Token> buf_tok_list;
 		tokenize(buf, buf_tok_list);
 
-		// move buf token list to full token list
-		full_tok_list.reserve(full_tok_list.size() + buf_tok_list.size());
-		std::move(buf_tok_list.begin(), buf_tok_list.end(), std::back_inserter(full_tok_list));
-		//delete buf_tok_list;
+		file_tok_list.reserve(file_tok_list.size() + buf_tok_list.size());
+		std::move(buf_tok_list.begin(), buf_tok_list.end(), std::back_inserter(file_tok_list));
 	}
 
-	// check if the full token list is still empty after tokenization
-	if (full_tok_list.empty())
+	file_tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
+
+	//check if the full token list is still empty after tokenization
+	if (file_tok_list.empty())
 	{
 		m_logger->log(log_type::ERROR, "Full token list empty after tokenization.");
-		return false; 
+		return std::vector<Token>();
 	}
-	return true;
+
+	return file_tok_list;
 }
 
 void amanises::Lexer::print_tokens_verbose(std::vector<Token>& tokens)
@@ -84,7 +82,6 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 			clear_token_buffer(tok_buf);
 		}
 	}
-	tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
 }
 
 Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list)
@@ -164,13 +161,13 @@ token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
 	// make sure the word doesnt contain any hidden chars
 	tok_buf = trim_word(tok_buf);
 
-	auto it = tokMap.find(tok_buf);
+	auto it = m_tok_map.find(tok_buf);
 
-	if (it != tokMap.end()) 
+	if (it != m_tok_map.end())
 	{
 		return it->second; 
 	}
-	if (it == tokMap.end())
+	if (it == m_tok_map.end())
 	{
 		return token_kind::TOK_IDENTIFIER;
 	}
@@ -204,9 +201,8 @@ token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf)
 
 std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::string& content, size_t max_chunk_size)
 {
-	// TODO: edgecases to solve:
-	// tracking syntax boundaries. as in open and closed delimiters.
-	// tokenization marks kinda
+	// TODO: tracking syntax boundaries. as in open and closed delimiters.
+	// TODO: tokenization marks kinda
 	// dont know if it is actually something i need to solve, just test this later
 
 	std::vector<std::string> chunks;
@@ -253,6 +249,8 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	switch (type)
 	{
 	// reserved keywords
+	case token_kind::TOK_EXIT:             return "EXIT";
+
 	case token_kind::TOK_IF:               return "IF";
 	case token_kind::TOK_ELSE:             return "ELSE";
 	case token_kind::TOK_FOR:              return "FOR";
@@ -270,6 +268,8 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	case token_kind::TOK_PROTECTED:        return "PROTECTED";
 	case token_kind::TOK_PUBLIC:           return "PUBLIC";
 	case token_kind::TOK_STATIC:           return "STATIC";
+
+	case token_kind::TOK_CONST:            return "CONST";
 
 	case token_kind::TOK_NEW:              return "NEW";
 	case token_kind::TOK_DELETE:           return "DELETE";
@@ -379,7 +379,7 @@ std::string amanises::Lexer::token_to_str_non_verbose(Token* token)
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
 	const std::string tok_template =
-		"T<K=`" + tok_kind + "`" +
+		"Tok <K=`" + tok_kind + "`" +
 		", V=`" + tok_val + "`>";
 
 	return tok_template;
@@ -387,7 +387,7 @@ std::string amanises::Lexer::token_to_str_non_verbose(Token* token)
 
 void amanises::Lexer::init_token_map()
 {
-	tokMap = {
+	m_tok_map = {
 		// punctuation
 		{ ";", token_kind::TOK_SEMICOLON },
 		{ ":", token_kind::TOK_COLON },
@@ -431,6 +431,8 @@ void amanises::Lexer::init_token_map()
 		{ "::", token_kind::TOK_SCOPE },
 
 		// keywords
+		{ "exit", token_kind::TOK_EXIT },
+
 		{ "if", token_kind::TOK_IF },
 		{ "else", token_kind::TOK_ELSE },
 		{ "for", token_kind::TOK_FOR },
@@ -449,13 +451,15 @@ void amanises::Lexer::init_token_map()
 		{ "public", token_kind::TOK_PUBLIC },
 		{ "static", token_kind::TOK_STATIC },
 
+		{ "const", token_kind::TOK_CONST },
+
 		{ "new", token_kind::TOK_NEW },
 		{ "delete", token_kind::TOK_DELETE },
 
 		// data Types
 		{ "int", token_kind::TOK_INT },
 		{ "float", token_kind::TOK_FLOAT },
-		//{ "double", token_kind::TOK_DOUBLE },
+		{ "double", token_kind::TOK_DOUBLE },
 		{ "char", token_kind::TOK_CHAR },
 		{ "string", token_kind::TOK_STRING },
 		{ "bool", token_kind::TOK_BOOL },
@@ -467,8 +471,16 @@ void amanises::Lexer::init_token_map()
 	};
 }
 
-void amanises::Lexer::update_line_col()
+void amanises::Lexer::update_line_col(const std::string_view& content, size_t& idx)
 {
+	if (content[idx] == '\n') {
+		m_cur_line++;
+		m_cur_col = 0;
+	}
+	else 
+	{
+		m_cur_col++;
+	}
 }
 
 inline bool amanises::Lexer::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
@@ -661,11 +673,13 @@ void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, 
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+	update_line_col(content, idx);
 	idx++;
 
 	while (idx < content.length() && is_alpha_num(content[idx]))
 	{
 		tok_buf.push_back(content[idx]);
+		update_line_col(content, idx);
 		idx++;
 	}
 
@@ -676,10 +690,12 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+	update_line_col(content, idx);
 	idx++;
 
 	while (idx < content.length() && is_operator(content, idx)) {
 		tok_buf.push_back(content[idx]);
+		update_line_col(content, idx);
 		idx++;
 	}
 
@@ -690,6 +706,7 @@ void amanises::Lexer::accumulate_punctuation_token(const std::string_view& conte
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+	update_line_col(content, idx);
 	idx++;
 
 	// not needed cause punctuation tokens are only size 1, not 2+
@@ -708,11 +725,13 @@ void amanises::Lexer::accumulate_identifier_token(const std::string_view& conten
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+	update_line_col(content, idx);
 	idx++;
 
 	while (idx < content.length() && is_identifier_char(content[idx]))
 	{
 		tok_buf.push_back(content[idx]); //content[idx]
+		update_line_col(content, idx);
 		idx++;
 	}
 
@@ -723,9 +742,10 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
+	update_line_col(content, idx);
+	idx++;
 
 	bool is_string_literal = (c == '"');
-	idx++;
 
 	while (idx < content.length())
 	{
@@ -734,6 +754,7 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 		if (is_string_literal)
 		{
 			tok_buf.push_back(c);
+			update_line_col(content, idx);
 			idx++;
 
 			if (c == '"')
@@ -744,6 +765,7 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 		else if (is_literal_char(c))
 		{
 			tok_buf.push_back(c);
+			update_line_col(content, idx);
 			idx++;
 		}
 		else
@@ -763,6 +785,7 @@ void amanises::Lexer::handle_white_space(const std::string_view& content, size_t
 {
 	while (idx < content.length() && is_space(content[idx]))
 	{
+		update_line_col(content, idx);
 		idx++;
 	}
 	lex_state = lex_states::LEX_INITIAL;
