@@ -662,6 +662,11 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 	tok_buf.push_back(c);
 	idx++;
 
+	while (idx < content.length() && is_operator(content, idx)) {
+		tok_buf.push_back(content[idx]);
+		idx++;
+	}
+
 	lex_state = lex_states::LEX_INITIAL;
 }
 
@@ -671,12 +676,13 @@ void amanises::Lexer::accumulate_punctuation_token(const std::string_view& conte
 	tok_buf.push_back(c);
 	idx++;
 
-	while (idx < content.length() && is_punctuator(c == content[idx]))
-	{
-		tok_buf.push_back(c);
-		idx++;
-
-	}
+	// not needed cause punctuation tokens are only size 1, not 2+
+	//while (idx < content.length() && is_punctuator(content[idx]))
+	//{
+	//	tok_buf.push_back(content[idx]);
+	//	idx++;
+	//
+	//}
 	//std::cout << tok_buf << std::endl;
 
 	lex_state = lex_states::LEX_INITIAL;
@@ -688,9 +694,9 @@ void amanises::Lexer::accumulate_identifier_token(const std::string_view& conten
 	tok_buf.push_back(c);
 	idx++;
 
-	while (idx < content.length() && is_identifier_char(c == content[idx]))
+	while (idx < content.length() && is_identifier_char(content[idx]))
 	{
-		tok_buf.push_back(c); //content[idx]
+		tok_buf.push_back(content[idx]); //content[idx]
 		idx++;
 	}
 

@@ -1,8 +1,20 @@
 #include "fnd.ama";
 
+class test_class {
+	public method1();
+	public method2();
+
+	private method3();
+}
+
 int main() {
 	int integer_literal_test = 4321;
 	float float_literal_test = 4.213;
 
+	int a = 1;
+	int b = a++;
+	printf(b);
+
 	printf("Hello World!");
 }
+
