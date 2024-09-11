@@ -38,7 +38,8 @@ namespace amanises
 		explicit Lexer(std::string _content, size_t _contentLen, Logger* _logger);
 		bool tokenize_content();
 
-		void debug_print_tokens(std::vector<Token>& tokens);
+		void print_tokens_verbose(std::vector<Token>& tokens);
+		void print_tokens_non_verbose(std::vector<Token>& tokens);
 		std::vector<Token> get_full_token_list() const { return std::move(full_tok_list); };
 	private:
 		Logger* m_logger;
@@ -66,7 +67,8 @@ namespace amanises
 		std::string trim_word(const std::string& str);
 
 		std::string token_kind_to_str(const token_kind type);
-		std::string token_to_str(Token* token);
+		std::string token_to_str_verbose(Token* token);
+		std::string token_to_str_non_verbose(Token* token);
 
 		void init_token_map();
 		void update_line_col();

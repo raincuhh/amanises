@@ -37,7 +37,7 @@ void amanises::CompilerPipeline::pipeline_init(char* argv[])
 	// get tokens
 	std::vector<Token> tokens = lexer->get_full_token_list();
 
-	lexer->debug_print_tokens(tokens);
+	lexer->print_tokens_verbose(tokens);
 	std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
 
 	m_logger->log(log_type::INFO, std::string("Lexing processing finished."));

@@ -48,13 +48,23 @@ bool amanises::Lexer::tokenize_content()
 	return true;
 }
 
-void amanises::Lexer::debug_print_tokens(std::vector<Token>& tokens)
+void amanises::Lexer::print_tokens_verbose(std::vector<Token>& tokens)
 {
 	if (tokens.empty()) return;
 
 	for (Token& token : tokens)
 	{
-		std::cout << token_to_str(&token) << std::endl;
+		std::cout << token_to_str_verbose(&token) << std::endl;
+	}
+}
+
+void amanises::Lexer::print_tokens_non_verbose(std::vector<Token>& tokens)
+{
+	if (tokens.empty()) return;
+
+	for (Token& token : tokens) 
+	{
+		std::cout << token_to_str_non_verbose(&token) << std::endl;
 	}
 }
 
@@ -82,7 +92,6 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 	while (idx < content.length())
 	{
 		char c = content[idx];
-		//std::cout << "Character: " << c << ", Index: " << idx << std::endl;
 
 		switch (lex_state)
 		{
@@ -122,7 +131,6 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 				lex_state = lex_states::LEX_ERROR;
 				continue;
 			}
-			break;
 		case lex_states::LEX_OPERATOR:
 			accumulate_operator_token(content, idx, c, tok_buf, lex_state, tok_list);
 			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
@@ -173,11 +181,6 @@ token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
 
 token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf)
 {
-	// null literal
-	if (tok_buf == "null") {
-		return token_kind::TOK_NULL_LIT;
-	}
-
 	// string literal
 	if (!tok_buf.empty() && tok_buf.front() == '"' && tok_buf.back() == '"') {
 		return token_kind::TOK_STRING_LIT;
@@ -254,6 +257,7 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	case token_kind::TOK_ELSE:             return "ELSE";
 	case token_kind::TOK_FOR:              return "FOR";
 	case token_kind::TOK_WHILE:            return "WHILE";
+	case token_kind::TOK_DO:               return "DO";
 	case token_kind::TOK_RETURN:           return "RETURN";
 	case token_kind::TOK_BREAK:            return "BREAK";
 	case token_kind::TOK_CONTINUE:         return "CONTINUE";
@@ -355,10 +359,9 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	}
 }
 
-std::string amanises::Lexer::token_to_str(Token* token)
+std::string amanises::Lexer::token_to_str_verbose(Token* token)
 {
 	const std::string tok_kind = token_kind_to_str(token->kind);
-
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
 	const std::string tok_template =
@@ -366,6 +369,18 @@ std::string amanises::Lexer::token_to_str(Token* token)
 		", val=`" + tok_val + "`" +
 		", line=`" + std::to_string(token->line) + "`" +
 		", col=`" + std::to_string(token->col) + "`>";
+
+	return tok_template;
+}
+
+std::string amanises::Lexer::token_to_str_non_verbose(Token* token)
+{
+	const std::string tok_kind = token_kind_to_str(token->kind);
+	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
+
+	const std::string tok_template =
+		"T<K=`" + tok_kind + "`" +
+		", V=`" + tok_val + "`>";
 
 	return tok_template;
 }
@@ -420,6 +435,7 @@ void amanises::Lexer::init_token_map()
 		{ "else", token_kind::TOK_ELSE },
 		{ "for", token_kind::TOK_FOR },
 		{ "while", token_kind::TOK_WHILE },
+		{ "do", token_kind::TOK_DO },
 		{ "return", token_kind::TOK_RETURN },
 		{ "break", token_kind::TOK_BREAK },
 		{ "continue", token_kind::TOK_CONTINUE },

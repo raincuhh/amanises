@@ -27,6 +27,7 @@ enum class token_kind {
 	TOK_ELSE,
 	TOK_FOR,
 	TOK_WHILE,
+	TOK_DO,
 	TOK_RETURN,
 	TOK_BREAK,
 	TOK_CONTINUE,
