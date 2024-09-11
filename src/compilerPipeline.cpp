@@ -12,7 +12,7 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 
 	std::vector<std::pair<std::string, std::vector<Token>>> src_and_tok_lists;
 
-	bool debug = false;
+	bool debug = true;
 
 
 	// initial processing of source files, and the tokenization of said source files
@@ -47,7 +47,11 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 	
 	for (size_t i = 0; i < src_and_tok_lists.size(); i++)
 	{
-		std::cout << src_and_tok_lists.size() << std::endl;
+
+		if (!compilerSetup->process_tokens_for_parser())
+		{
+			exit(EXIT_FAILURE);
+		}
 	}
 	//m_logger->log(log_type::INFO, std::string("Ast parsing started."));
 	//m_logger->log(log_type::INFO, std::string("Ast parsing finished."));

@@ -242,7 +242,6 @@ std::string amanises::Lexer::token_kind_to_str(const token_kind type)
 	switch (type)
 	{
 	// reserved keywords
-	case token_kind::TOK_EXIT:             return "EXIT";
 
 	case token_kind::TOK_IF:               return "IF";
 	case token_kind::TOK_ELSE:             return "ELSE";
@@ -436,7 +435,6 @@ void amanises::Lexer::init_token_map()
 		{ "::", token_kind::TOK_SCOPE },
 
 		// keywords
-		{ "exit", token_kind::TOK_EXIT },
 
 		{ "if", token_kind::TOK_IF },
 		{ "else", token_kind::TOK_ELSE },
@@ -655,8 +653,7 @@ inline bool amanises::Lexer::is_punctuator(char c)
 	}
 }
 
-
-bool amanises::Lexer::is_identifier_start(char c)
+inline bool amanises::Lexer::is_identifier_start(char c)
 {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
@@ -664,7 +661,7 @@ bool amanises::Lexer::is_identifier_start(char c)
 		|| (c >= 128);
 }
 
-bool amanises::Lexer::is_identifier_char(char c)
+inline bool amanises::Lexer::is_identifier_char(char c)
 {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
@@ -678,12 +675,12 @@ inline bool amanises::Lexer::is_digit(char c)
 	return std::isdigit(static_cast<unsigned char>(c));
 }
 
-bool amanises::Lexer::is_literal_start(char c)
+inline bool amanises::Lexer::is_literal_start(char c)
 {
 	return (is_digit(c) || c == '"');
 }
 
-bool amanises::Lexer::is_literal_char(char c)
+inline bool amanises::Lexer::is_literal_char(char c)
 {
 	return (is_digit(c) || c == '.' || is_identifier_char(c)); // identifier chars can be in stuff like strings etc.
 }

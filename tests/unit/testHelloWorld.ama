@@ -1,0 +1,6 @@
+
+i8 main() {
+	printl("Hello World!");
+
+	return 0;
+}

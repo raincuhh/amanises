@@ -23,8 +23,6 @@ enum class token_kind {
 	TOK_RETURN_TYPE,
 
 	// reserved keywords
-	TOK_EXIT,
-
 	TOK_IF,
 	TOK_ELSE,
 	TOK_FOR,

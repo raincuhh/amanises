@@ -45,6 +45,11 @@ bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::
 	return true;
 }
 
+bool amanises::CompilerSetup::process_tokens_for_parser()
+{
+	return true;
+}
+
 std::string amanises::CompilerSetup::read_file(const std::string& file_path)
 {
 	std::fstream input(file_path, std::ios::in);

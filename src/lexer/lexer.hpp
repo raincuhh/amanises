@@ -74,11 +74,11 @@ namespace amanises
 		inline bool is_alpha_num(char c);
 		inline bool is_operator(const std::string_view& content, size_t& idx);
 		inline bool is_punctuator(char c);
-		bool is_identifier_start(char c);
-		bool is_identifier_char(char c);
+		inline bool is_identifier_start(char c);
+		inline bool is_identifier_char(char c);
 		inline bool is_digit(char c);
-		bool is_literal_start(char c);
-		bool is_literal_char(char c);
+		inline bool is_literal_start(char c);
+		inline bool is_literal_char(char c);
 
 		void accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);

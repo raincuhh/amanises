@@ -22,7 +22,7 @@ namespace amanises
 		CompilerSetup(Logger* logger, Lexer* lexer);
 
 		bool process_file_for_lexer(const char* src_path, std::string& src_name, std::vector<Token>& src_tok_list);
-		//bool process_tokens_for_parser();
+		bool process_tokens_for_parser();
 
 	private:
 		Logger* m_logger;
