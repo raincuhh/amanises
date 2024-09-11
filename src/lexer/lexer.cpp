@@ -10,12 +10,14 @@ amanises::Lexer::Lexer(Logger* logger) :
 	init_token_map();
 }
 
+
+// responsible for tokenizing a specific source file.
 std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 {
 	std::vector<Token> file_tok_list;
-	const size_t buf_size = 8192;
+	const size_t buf_size = 8192; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
 	size_t line = 1;
-	size_t col = 0; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
+	size_t col = 0;
 
 	m_cur_line = line;
 	m_cur_col = col;
@@ -35,13 +37,6 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 	}
 
 	file_tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
-
-	//check if the full token list is still empty after tokenization
-	if (file_tok_list.empty())
-	{
-		m_logger->log(log_type::ERROR, "Full token list empty after tokenization.");
-		return std::vector<Token>();
-	}
 
 	return file_tok_list;
 }
