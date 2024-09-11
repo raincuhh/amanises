@@ -67,11 +67,12 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	{
 		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
 
-		std::cout << tok_buf << std::endl;
-		tok_list.push_back(tok);
-		clear_token_buffer(tok_buf);
+		if (!tok_buf.empty()) {
 
-		idx++;
+			std::cout << tok_buf << std::endl;
+			tok_list.push_back(tok);
+			clear_token_buffer(tok_buf);
+		}
 	}
 	tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
 }
@@ -81,6 +82,7 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 	while (idx < content.length())
 	{
 		char c = content[idx];
+		//std::cout << "Character: " << c << ", Index: " << idx << std::endl;
 
 		switch (lex_state)
 		{
@@ -108,6 +110,8 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 			else if (is_punctuator(c))
 			{
 				lex_state = lex_states::LEX_PUNCTUATION;
+				//accumulate_punctuation_token(content, idx, c, tok_buf, lex_state, tok_list);
+				//return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
 				continue;
 			}
 			else if (is_preproc(c))
@@ -664,17 +668,19 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 
 void amanises::Lexer::accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
+	//std::cout << c << std::endl;
+	//std::cout << "entered punctuation state accumulation" << std::endl;
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	idx++;
 
-	while (idx < content.length() && is_punctuator(c))
+	while (idx < content.length() && is_punctuator(c == content[idx]))
 	{
 		tok_buf.push_back(c);
 		idx++;
 
 	}
-	std::cout << tok_buf << std::endl;
+	//std::cout << tok_buf << std::endl;
 
 	lex_state = lex_states::LEX_INITIAL;
 }
@@ -720,6 +726,7 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 			break;
 		}
 	}
+	//std::cout << "Next Character: " << content[idx] << " at Index: " << idx << std::endl;
 	lex_state = lex_states::LEX_INITIAL;
 }
 
