@@ -1,5 +1,5 @@
 
-int main() {
+i8 main() {
 	i8 a, b, c, d;
 	a = 1;
 	b = 2;
@@ -8,10 +8,10 @@ int main() {
 
 	a+= 2;
 	b--;
-	if (a <= b || c % 3) {
-		printf("type shi");
+	if (a <= b || c % 2 == 0) {
+		printf("even");
 	}
 	else {
-		printf("ok what")
+		printl("odd")
 	}
 }

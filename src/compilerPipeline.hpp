@@ -10,6 +10,7 @@
 
 #include "lexer/token.hpp"
 #include "lexer/lexer.hpp"
+#include "lexer/lexHelper.hpp"
 #include "error.hpp"
 #include "logger.hpp"
 #include "compilerSetup.hpp"

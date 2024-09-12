@@ -1,5 +1,5 @@
 
-int main() {
+i8 main() {
 	i16 x, y, z;
 
 	while (1) {

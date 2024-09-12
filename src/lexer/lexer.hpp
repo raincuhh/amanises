@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include "token.hpp"
+#include "lexHelper.hpp"
 #include "../logger.hpp"
 
 //context for the semantic expression checking later on
@@ -20,7 +21,6 @@ namespace amanises
 	class Lexer
 	{
 	public:
-		using Logger = amanises::Logger;
 
 		enum class lex_states
 		{
@@ -35,13 +35,9 @@ namespace amanises
 			LEX_ERROR
 		};
 
-		explicit Lexer(Logger* _logger);
+		explicit Lexer(Logger* logger);
 		std::vector<Token> tokenize_source_file(std::string source);
 
-		void print_tokens_verbose(std::vector<Token>& tokens);
-		void print_tokens_non_verbose(std::vector<Token>& tokens);
-
-		std::string token_kind_to_str(const token_kind type);
 	private:
 		Logger* m_logger;
 		std::unordered_map<std::string, token_kind> m_tok_map;
@@ -57,29 +53,9 @@ namespace amanises
 		void clear_token_buffer(std::string& tok_buf) { tok_buf.clear(); };
 
 		std::vector<std::string> split_to_chunk_buffers(const std::string& content, size_t max_chunk_size);
-		
-		std::string trim_white_space(std::string& content);
-		std::string trim_word(const std::string& str);
-
-		std::string token_to_str_verbose(Token* token);
-		std::string token_to_str_non_verbose(Token* token);
 
 		void init_token_map();
 		void update_line_col(const std::string_view& content, size_t& idx);
-		inline bool peek_ahead(const std::string_view& content, size_t& idx, char to_check);
-
-		inline bool is_chunk_buf_boundary_char(char c);
-		inline bool is_space(char c);
-		inline bool is_preproc(char c);
-		inline bool is_alpha(char c);
-		inline bool is_alpha_num(char c);
-		inline bool is_operator(const std::string_view& content, size_t& idx);
-		inline bool is_punctuator(char c);
-		inline bool is_identifier_start(char c);
-		inline bool is_identifier_char(char c);
-		inline bool is_digit(char c);
-		inline bool is_literal_start(char c);
-		inline bool is_literal_char(char c);
 
 		void accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);
 		void accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list);

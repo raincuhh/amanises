@@ -13,8 +13,6 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 
 	std::vector<std::pair<std::string, std::vector<Token>>> src_and_tok_lists;
 	std::vector<const char*> src_path_list;
-	bool debug = false;
-
 
 	// initial processing of source files, and the tokenization of said source files
 	for (size_t i = 1; i < argc; i++)
@@ -33,19 +31,18 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 	}
 
 	// debug printing lexing result
-	if (debug)
+	
+	
+	for (auto& pair : src_and_tok_lists)
 	{
-		for (auto& pair : src_and_tok_lists)
-		{
-			std::string src_name = pair.first;
-			std::vector<Token> tokens = pair.second;
+		std::string src_name = pair.first;
+		std::vector<Token> tokens = pair.second;
 
-			lexer->print_tokens_non_verbose(tokens);
-			std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
-		}
+		LexerHelper::print_tokens_non_verbose(tokens);
+		//std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
 	}
 	
-	std::cout << "working?" << std::endl;
+	
 	// starting the processing of src file parsing into ast
 	for (size_t i = 0; i < src_and_tok_lists.size(); i++)
 	{

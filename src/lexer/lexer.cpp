@@ -9,7 +9,6 @@ amanises::Lexer::Lexer(Logger* logger) :
 	init_token_map();
 }
 
-
 // responsible for tokenizing a specific source file.
 std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 {
@@ -21,7 +20,7 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 	m_cur_line = line;
 	m_cur_col = col;
 
-	file_tok_list.push_back(Token{ .kind = token_kind::TOK_SOF });
+	//file_tok_list.push_back(Token{ .kind = token_kind::TOK_SOF });
 
 	// splitting the source into chunks of 8192
 	std::vector<std::string> chunk_bufs = split_to_chunk_buffers(std::move(src), buf_size);
@@ -38,152 +37,6 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 	file_tok_list.push_back(Token{ .kind = token_kind::TOK_EOF });
 
 	return file_tok_list;
-}
-
-void amanises::Lexer::print_tokens_verbose(std::vector<Token>& tokens)
-{
-	if (tokens.empty()) return;
-
-	for (Token& token : tokens)
-	{
-		std::cout << token_to_str_verbose(&token) << std::endl;
-	}
-}
-
-void amanises::Lexer::print_tokens_non_verbose(std::vector<Token>& tokens)
-{
-	if (tokens.empty()) return;
-
-	for (Token& token : tokens) 
-	{
-		std::cout << token_to_str_non_verbose(&token) << std::endl;
-	}
-}
-
-std::string amanises::Lexer::token_kind_to_str(const token_kind type)
-{
-	switch (type)
-	{
-		// reserved keywords
-
-	case token_kind::TOK_IF:               return "IF";
-	case token_kind::TOK_ELSE:             return "ELSE";
-	case token_kind::TOK_FOR:              return "FOR";
-	case token_kind::TOK_WHILE:            return "WHILE";
-	case token_kind::TOK_DO:               return "DO";
-	case token_kind::TOK_RETURN:           return "RETURN";
-	case token_kind::TOK_BREAK:            return "BREAK";
-	case token_kind::TOK_CONTINUE:         return "CONTINUE";
-	case token_kind::TOK_SWITCH:           return "SWITCH";
-	case token_kind::TOK_CASE:             return "CASE";
-	case token_kind::TOK_DEFAULT:          return "DEFAULT";
-
-	case token_kind::TOK_CLASS:            return "CLASS";
-	case token_kind::TOK_PRIVATE:          return "PRIVATE";
-	case token_kind::TOK_PROTECTED:        return "PROTECTED";
-	case token_kind::TOK_PUBLIC:           return "PUBLIC";
-	case token_kind::TOK_STATIC:           return "STATIC";
-
-	case token_kind::TOK_CONST:            return "CONST";
-
-	case token_kind::TOK_NEW:              return "NEW";
-	case token_kind::TOK_DELETE:           return "DELETE";
-
-		// data types
-	case token_kind::TOK_I8:               return "I8";
-	case token_kind::TOK_I16:              return "I16";
-	case token_kind::TOK_I32:              return "I32";
-	case token_kind::TOK_I64:              return "I64";
-	case token_kind::TOK_I128:             return "I128";
-
-	case token_kind::TOK_U8:               return "U8";
-	case token_kind::TOK_U16:              return "U16";
-	case token_kind::TOK_U32:              return "U32";
-	case token_kind::TOK_U64:              return "U64";
-	case token_kind::TOK_U128:             return "U128";
-
-	case token_kind::TOK_F32:              return "F32";
-	case token_kind::TOK_F64:              return "F64";
-
-	case token_kind::TOK_CHAR:             return "CHAR";
-	case token_kind::TOK_STRING:           return "STRING";
-	case token_kind::TOK_BOOL:             return "BOOL";
-	case token_kind::TOK_VOID:             return "VOID";
-
-		// operators
-	case token_kind::TOK_PLUS:             return "PLUS";
-	case token_kind::TOK_MINUS:            return "MINUS";
-	case token_kind::TOK_MULTIPLY:         return "MULTIPLY";
-	case token_kind::TOK_DIVIDE:           return "DIVIDE";
-	case token_kind::TOK_MODULO:           return "MODULO";
-
-	case token_kind::TOK_INCREMENT:        return "INCREMENT";
-	case token_kind::TOK_DECREMENT:        return "DECREMENT";
-
-	case token_kind::TOK_EQUAL:            return "EQUAL";
-	case token_kind::TOK_NOT_EQUAL:        return "NOT_EQUAL";
-	case token_kind::TOK_LESS_THAN:        return "LESS_THAN";
-	case token_kind::TOK_GREATER_THAN:     return "GREATER_THAN";
-	case token_kind::TOK_LESS_EQUAL:       return "LESS_EQUAL";
-	case token_kind::TOK_GREATER_EQUAL:    return "GREATER_EQUAL";
-
-	case token_kind::TOK_AND:              return "AND";
-	case token_kind::TOK_OR:               return "OR";
-	case token_kind::TOK_NOT:              return "NOT";
-
-	case token_kind::TOK_ASSIGN:           return "ASSIGN";
-	case token_kind::TOK_PLUS_ASSIGN:      return "PLUS_ASSIGN";
-	case token_kind::TOK_MINUS_ASSIGN:     return "MINUS_ASSIGN";
-	case token_kind::TOK_MULTIPLY_ASSIGN:  return "MULTIPLY_ASSIGN";
-
-	case token_kind::TOK_MEMBER_ACCESS:    return "MEMBER_ACCESS";
-	case token_kind::TOK_POINTER_ACCESS:   return "POINTER_ACCESS";
-	case token_kind::TOK_SCOPE:            return "SCOPE";
-
-		// punctuation
-	case token_kind::TOK_SEMICOLON:		   return "SEMICOLON";
-	case token_kind::TOK_COLON:            return "COLON";
-	case token_kind::TOK_DOT:              return "DOT";
-	case token_kind::TOK_COMMA:            return "COMMA";
-	case token_kind::TOK_OPEN_PAR:         return "OPEN_PAR";
-	case token_kind::TOK_CLOSE_PAR:        return "CLOSE_PAR";
-	case token_kind::TOK_OPEN_BRACE:       return "OPEN_BRACE";
-	case token_kind::TOK_CLOSE_BRACE:      return "CLOSE_BRACE";
-	case token_kind::TOK_OPEN_BRACKET:     return "OPEN_BRACKET";
-	case token_kind::TOK_CLOSE_BRACKET:    return "CLOSE_BRACKET";
-
-		// identifier
-	case token_kind::TOK_IDENTIFIER:       return "IDENTIFIER";
-
-		// literals 
-	case token_kind::TOK_INTEGER_LIT:      return "INTEGER_LIT";
-	case token_kind::TOK_FLOAT_LIT:        return "FLOAT_LIT";
-	case token_kind::TOK_CHAR_LIT:         return "CHAR_LIT";
-	case token_kind::TOK_STRING_LIT:       return "STRING_LIT";
-	case token_kind::TOK_BOOLEAN_LIT:      return "BOOLEAN_LIT";
-	case token_kind::TOK_NULL_LIT:         return "NULL_LIT";
-
-		// comments
-	case token_kind::TOK_LINE_COMMENT:     return "LINE_COMMENT";
-	case token_kind::TOK_BLOCK_COMMENT:    return "BLOCK_COMMENT";
-
-		// function related
-	case token_kind::TOK_FUNCTION:         return "FUNCTION";
-	case token_kind::TOK_METHOD:           return "METHOD";
-	case token_kind::TOK_RETURN_TYPE:      return "RETURN_TYPE";
-
-		// start and end of file
-	case token_kind::TOK_EOF:              return "_EOF";
-	case token_kind::TOK_SOF:              return "_SOF";
-
-		// preprocessors
-	case token_kind::TOK_PRAGMA:           return "PRAGMA";
-	case token_kind::TOK_INCLUDE:          return "INCLUDE";
-
-		// error handling
-	case token_kind::TOK_ERROR:            return "ERROR";
-	default:                               return "UNDEFINED";
-	}
 }
 
 void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok_list)
@@ -213,32 +66,32 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 		switch (lex_state)
 		{
 		case lex_states::LEX_INITIAL:
-			if (is_space(c))
+			if (LexerHelper::is_space(c))
 			{
 				lex_state = lex_states::LEX_WHITE_SPACE;
 				break;
 			}
-			else if (is_identifier_start(c))
+			else if (LexerHelper::is_identifier_start(c))
 			{
 				lex_state = lex_states::LEX_IDENTIFIER;
 				continue;
 			}
-			else if (is_literal_start(c))
+			else if (LexerHelper::is_literal_start(c))
 			{
 				lex_state = lex_states::LEX_LITERAL;
 				continue;
 			}
-			else if (is_operator(content, idx))
+			else if (LexerHelper::is_operator(content, idx))
 			{
 				lex_state = lex_states::LEX_OPERATOR;
 				continue;
 			}
-			else if (is_punctuator(c))
+			else if (LexerHelper::is_punctuator(c))
 			{
 				lex_state = lex_states::LEX_PUNCTUATION;
 				continue;
 			}
-			else if (is_preproc(c))
+			else if (LexerHelper::is_preproc_start(c))
 			{
 				lex_state = lex_states::LEX_PREPROC;
 				continue;
@@ -278,7 +131,7 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 
 token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
 {
-	tok_buf = trim_word(tok_buf);
+	tok_buf = LexerHelper::trim_str(tok_buf);
 
 	auto it = m_tok_map.find(tok_buf);
 
@@ -332,7 +185,7 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 		size_t end = std::min(start + max_chunk_size, content_size);
 
 		// ensure we only split on a boundary character
-		while (end < content_size && !is_chunk_buf_boundary_char(content[end])) {
+		while (end < content_size && !LexerHelper::is_chunk_buf_boundary_char(content[end])) {
 			++end;
 		}
 
@@ -344,49 +197,6 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 		start = end;
 	}
 	return chunks;
-}
-
-std::string amanises::Lexer::trim_white_space(std::string& content)
-{
-	// reserve and erase space on content if the content has a space at a specific char
-	content.reserve(content.size());
-	content.erase(std::remove_if(content.begin(), content.end(), [](char c) {
-		return std::isspace(c);
-		}), content.end());
-	return content;
-}
-
-std::string amanises::Lexer::trim_word(const std::string& str)
-{
-	auto start = str.find_first_not_of(" \t\n\r\f\v");
-	auto end = str.find_last_not_of(" \t\n\r\f\v");
-	return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
-}
-
-std::string amanises::Lexer::token_to_str_verbose(Token* token)
-{
-	const std::string tok_kind = token_kind_to_str(token->kind);
-	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
-
-	const std::string tok_template =
-		"Tok <k=`" + tok_kind + "`" +
-		", v=`" + tok_val + "`" +
-		", l=`" + std::to_string(token->line) + "`" +
-		", c=`" + std::to_string(token->col) + "`>";
-
-	return tok_template;
-}
-
-std::string amanises::Lexer::token_to_str_non_verbose(Token* token)
-{
-	const std::string tok_kind = token_kind_to_str(token->kind);
-	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
-
-	const std::string tok_template =
-		"Tok <k=`" + tok_kind + "`" +
-		", v=`" + tok_val + "`>";
-
-	return tok_template;
 }
 
 void amanises::Lexer::init_token_map()
@@ -435,7 +245,6 @@ void amanises::Lexer::init_token_map()
 		{ "::", token_kind::TOK_SCOPE },
 
 		// keywords
-
 		{ "if", token_kind::TOK_IF },
 		{ "else", token_kind::TOK_ELSE },
 		{ "for", token_kind::TOK_FOR },
@@ -460,8 +269,6 @@ void amanises::Lexer::init_token_map()
 		{ "delete", token_kind::TOK_DELETE },
 
 		// data Types
-		
-		// Data types
 		{ "i8", token_kind::TOK_I8 },
 		{ "i16", token_kind::TOK_I16 },
 		{ "i32", token_kind::TOK_I32 },
@@ -500,191 +307,6 @@ void amanises::Lexer::update_line_col(const std::string_view& content, size_t& i
 	}
 }
 
-inline bool amanises::Lexer::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
-{
-	if (idx + 1 < content.size() && content[idx + 1] == to_check)
-	{
-		return true;
-	}
-	return false;
-}
-
-inline bool amanises::Lexer::is_chunk_buf_boundary_char(char c)
-{
-	switch (c)
-	{
-	case '\n':
-	case '}':
-	case '{':
-	case ';':
-		return true;
-	default:
-		return false;
-	}
-}
-
-inline bool amanises::Lexer::is_space(char c)
-{
-	switch (c)
-	{
-	case ' ':
-	case '\t':
-	case '\r':
-	case '\n':
-		return true;
-	default:
-		return false;
-	}
-}
-
-inline bool amanises::Lexer::is_preproc(char c)
-{
-	return c == '#';
-}
-
-inline bool amanises::Lexer::is_alpha(char c)
-{
-	return std::isalpha(static_cast<unsigned char>(c));
-}
-
-inline bool amanises::Lexer::is_alpha_num(char c)
-{
-	return std::isalnum(static_cast<unsigned char>(c));
-}
-
-inline bool amanises::Lexer::is_operator(const std::string_view& content, size_t& idx)
-{
-	char c = content[idx];
-
-	switch (c)
-	{
-	case '+':
-		if (peek_ahead(content, idx, '+'))
-		{
-			return true;
-		}
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		return true;
-	case '-':
-		if (peek_ahead(content, idx, '-'))
-		{
-			return true;
-		}
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		if (peek_ahead(content, idx, '>'))
-		{
-			return true;
-		}
-		return true;
-	case '*':
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		return true;
-	case '/':
-	case '%':
-		return true;
-	case '=':
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		return true;
-	case '!':
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		return true;
-	case '<':
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-
-		return true;
-	case '>':
-		if (peek_ahead(content, idx, '='))
-		{
-			return true;
-		}
-		return true;
-	case '&':
-		if (peek_ahead(content, idx, '&'))
-		{
-			return true;
-		}
-		return true;
-	case '|':
-		if (peek_ahead(content, idx, '|'))
-		{
-			return true;
-		}
-		return true;
-	default:
-		return false;
-	}
-}
-
-inline bool amanises::Lexer::is_punctuator(char c)
-{
-	switch (c)
-	{
-	case ';':
-	case ':':
-	case '.':
-	case ',':
-	case '(':
-	case ')':
-	case '{':
-	case '}':
-	case '[':
-	case ']':
-		return true;
-	default:
-		return false;
-	}
-}
-
-inline bool amanises::Lexer::is_identifier_start(char c)
-{
-	return (c >= 'a' && c <= 'z')
-		|| (c >= 'A' && c <= 'Z')
-		|| c == '_'
-		|| (c >= 128);
-}
-
-inline bool amanises::Lexer::is_identifier_char(char c)
-{
-	return (c >= 'a' && c <= 'z')
-		|| (c >= 'A' && c <= 'Z')
-		|| (c >= '0' && c <= '9')
-		|| c == '_'
-		|| (c >= 128);
-}
-
-inline bool amanises::Lexer::is_digit(char c)
-{
-	return std::isdigit(static_cast<unsigned char>(c));
-}
-
-inline bool amanises::Lexer::is_literal_start(char c)
-{
-	return (is_digit(c) || c == '"');
-}
-
-inline bool amanises::Lexer::is_literal_char(char c)
-{
-	return (is_digit(c) || c == '.' || is_identifier_char(c)); // identifier chars can be in stuff like strings etc.
-}
-
 void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
 	clear_token_buffer(tok_buf);
@@ -692,7 +314,7 @@ void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, 
 	update_line_col(content, idx);
 	idx++;
 
-	while (idx < content.length() && is_alpha_num(content[idx]))
+	while (idx < content.length() && LexerHelper::is_alpha_num(content[idx]))
 	{
 		tok_buf.push_back(content[idx]);
 		update_line_col(content, idx);
@@ -709,7 +331,7 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 	update_line_col(content, idx);
 	idx++;
 
-	while (idx < content.length() && is_operator(content, idx)) {
+	while (idx < content.length() && LexerHelper::is_operator(content, idx)) {
 		tok_buf.push_back(content[idx]);
 		update_line_col(content, idx);
 		idx++;
@@ -725,15 +347,6 @@ void amanises::Lexer::accumulate_punctuation_token(const std::string_view& conte
 	update_line_col(content, idx);
 	idx++;
 
-	// not needed cause punctuation tokens are only size 1, not 2+
-	//while (idx < content.length() && is_punctuator(content[idx]))
-	//{
-	//	tok_buf.push_back(content[idx]);
-	//	idx++;
-	//
-	//}
-	//std::cout << tok_buf << std::endl;
-
 	lex_state = lex_states::LEX_INITIAL;
 }
 
@@ -744,9 +357,9 @@ void amanises::Lexer::accumulate_identifier_token(const std::string_view& conten
 	update_line_col(content, idx);
 	idx++;
 
-	while (idx < content.length() && is_identifier_char(content[idx]))
+	while (idx < content.length() && LexerHelper::is_identifier(content[idx]))
 	{
-		tok_buf.push_back(content[idx]); //content[idx]
+		tok_buf.push_back(content[idx]);
 		update_line_col(content, idx);
 		idx++;
 	}
@@ -778,7 +391,7 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 				break;
 			}
 		}
-		else if (is_literal_char(c))
+		else if (LexerHelper::is_literal(c))
 		{
 			tok_buf.push_back(c);
 			update_line_col(content, idx);
@@ -799,7 +412,7 @@ void amanises::Lexer::handle_comments(const std::string_view& content, size_t& i
 
 void amanises::Lexer::handle_white_space(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
-	while (idx < content.length() && is_space(content[idx]))
+	while (idx < content.length() && LexerHelper::is_space(content[idx]))
 	{
 		update_line_col(content, idx);
 		idx++;
