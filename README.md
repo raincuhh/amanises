@@ -1,2 +1,2 @@
 # Amanises
-a custom programming language made in c++
+compiler thing, with no ext libs
