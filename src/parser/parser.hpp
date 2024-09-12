@@ -8,15 +8,16 @@
 
 #include "../../src/logger.hpp"
 #include "../../src/lexer/token.hpp"
+#include "../../src/lexer/lexer.hpp"
 
 namespace amanises
 {
 	class Parser
 	{
 	public:
-		Parser(Logger* logger, std::vector<Token> src_tok_list);
+		Parser(Logger* logger);
 		
-		void parse_token_list(std::vector<Token> src_tok_list);
+		void parse_token_list(std::vector<Token>&& src_tok_list);
 
 	private:
 		Logger* m_logger; 

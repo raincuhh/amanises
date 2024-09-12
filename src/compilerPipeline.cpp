@@ -8,11 +8,12 @@ amanises::CompilerPipeline::CompilerPipeline(Logger* logger) :
 void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 {
 	std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(m_logger);
-	std::unique_ptr<CompilerSetup> compilerSetup = std::make_unique<CompilerSetup>(m_logger, lexer.get());
+	std::unique_ptr<Parser> parser = std::make_unique<Parser>(m_logger);
+	std::unique_ptr<CompilerSetup> compilerSetup = std::make_unique<CompilerSetup>(m_logger, lexer.get(), parser.get());
 
 	std::vector<std::pair<std::string, std::vector<Token>>> src_and_tok_lists;
-
-	bool debug = true;
+	std::vector<const char*> src_path_list;
+	bool debug = false;
 
 
 	// initial processing of source files, and the tokenization of said source files
@@ -28,31 +29,35 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 		}
 
 		src_and_tok_lists.emplace_back(src_name, src_tok_list);
+		src_path_list.emplace_back(src_path);
 	}
 
-	// debug printing 
+	// debug printing lexing result
 	if (debug)
 	{
 		for (auto& pair : src_and_tok_lists)
 		{
-			std::vector<Token> tokens = pair.second;
 			std::string src_name = pair.first;
+			std::vector<Token> tokens = pair.second;
 
 			lexer->print_tokens_non_verbose(tokens);
 			std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
 		}
 	}
 	
+	std::cout << "working?" << std::endl;
 	// starting the processing of src file parsing into ast
-	
 	for (size_t i = 0; i < src_and_tok_lists.size(); i++)
 	{
+		// passing src_path around for reference for logger
+		// on what process is starting and finishing.
+		const char* src_path = src_path_list[i];
+		std::string src_name = src_and_tok_lists[i].first;
+		std::vector<Token> src_tok_list = src_and_tok_lists[i].second;
 
-		if (!compilerSetup->process_tokens_for_parser())
+		if (!compilerSetup->process_tok_list_for_parser(src_path, src_name, src_tok_list))
 		{
 			exit(EXIT_FAILURE);
 		}
 	}
-	//m_logger->log(log_type::INFO, std::string("Ast parsing started."));
-	//m_logger->log(log_type::INFO, std::string("Ast parsing finished."));
 }

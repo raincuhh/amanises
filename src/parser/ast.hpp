@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 
 namespace amanises
 {
@@ -21,3 +21,4 @@ namespace amanises
 
 
 }
+*/

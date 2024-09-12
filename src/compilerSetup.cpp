@@ -1,8 +1,9 @@
 #include "compilerSetup.hpp"
 
-amanises::CompilerSetup::CompilerSetup(Logger* logger, Lexer* lexer) :
+amanises::CompilerSetup::CompilerSetup(Logger* logger, Lexer* lexer, Parser* parser) :
 	m_logger(logger),
-	m_lexer(lexer)
+	m_lexer(lexer),
+	m_parser(parser)
 {
 }
 
@@ -26,7 +27,7 @@ bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::
 	}
 
 	// get file name
-	src_name = get_file_name(src_path);
+	src_name = get_file_name_with_suffix(src_path);
 	if (src_name.empty())
 	{
 		m_logger->log(log_type::ERROR, "Unable to determine file name for: " + std::string(src_path));
@@ -45,10 +46,21 @@ bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::
 	return true;
 }
 
-bool amanises::CompilerSetup::process_tokens_for_parser()
+bool amanises::CompilerSetup::process_tok_list_for_parser(const char* src_path, const std::string& src_name, std::vector<Token>& src_tok_list)
 {
+	m_logger->log(log_type::INFO, "Parsing process started for " + std::string(src_path));
+
+	// TODO: implement parsing 
+	// RMBR: things that change need the mutable prefix cause this is a const method
+
+	m_parser->parse_token_list(std::move(src_tok_list));
+	
+
+	m_logger->log(log_type::INFO, "Parsing process started for " + std::string(src_path));
 	return true;
 }
+
+
 
 std::string amanises::CompilerSetup::read_file(const std::string& file_path)
 {
@@ -75,7 +87,21 @@ bool amanises::CompilerSetup::verify_opening_file_path(const char* file_path)
 	return true;
 }
 
-std::string amanises::CompilerSetup::get_file_name(const std::string& file_path)
+std::string amanises::CompilerSetup::get_file_name_with_suffix(const std::string& file_path)
 {
 	return file_path.substr(file_path.find_last_of("//\\") + 1);
+}
+
+std::string amanises::CompilerSetup::get_file_name_without_suffix(const std::string& file_path)
+{
+	std::string file_name = get_file_name_with_suffix(file_path);
+
+	size_t last_dot = file_name.find_last_of('.');
+
+	if (last_dot != std::string::npos)
+	{
+		return file_name.substr(0, last_dot);
+	}
+
+	return file_name;
 }

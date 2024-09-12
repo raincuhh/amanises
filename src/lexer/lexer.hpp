@@ -40,6 +40,8 @@ namespace amanises
 
 		void print_tokens_verbose(std::vector<Token>& tokens);
 		void print_tokens_non_verbose(std::vector<Token>& tokens);
+
+		std::string token_kind_to_str(const token_kind type);
 	private:
 		Logger* m_logger;
 		std::unordered_map<std::string, token_kind> m_tok_map;
@@ -59,7 +61,6 @@ namespace amanises
 		std::string trim_white_space(std::string& content);
 		std::string trim_word(const std::string& str);
 
-		std::string token_kind_to_str(const token_kind type);
 		std::string token_to_str_verbose(Token* token);
 		std::string token_to_str_non_verbose(Token* token);
 
