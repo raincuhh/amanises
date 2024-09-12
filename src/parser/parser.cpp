@@ -7,7 +7,6 @@ amanises::Parser::Parser(Logger* logger) :
 
 void amanises::Parser::parse_token_list(std::vector<Token>&& src_tok_list)
 {
-	//std::cout << src_tok_list.size() << std::endl;
 
 	for (size_t idx = 0; idx < src_tok_list.size() && src_tok_list[idx].kind != token_kind::TOK_EOF; idx++)
 	{
