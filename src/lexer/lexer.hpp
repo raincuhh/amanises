@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #include "token.hpp"
-#include "lexHelper.hpp"
+#include "lHelper.hpp"
 #include "../logger.hpp"
 
 //context for the semantic expression checking later on

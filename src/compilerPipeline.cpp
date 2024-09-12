@@ -31,15 +31,13 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[])
 	}
 
 	// debug printing lexing result
-	
-	
 	for (auto& pair : src_and_tok_lists)
 	{
 		std::string src_name = pair.first;
 		std::vector<Token> tokens = pair.second;
 
 		LexerHelper::print_tokens_non_verbose(tokens);
-		//std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
+		std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
 	}
 	
 	

@@ -83,6 +83,11 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 			}
 			else if (LexerHelper::is_operator(content, idx))
 			{
+				if (LexerHelper::peek_ahead(content, idx, '*') || LexerHelper::peek_ahead(content, idx, '/'))
+				{
+					lex_state = lex_states::LEX_COMMENTS;
+					continue;
+				}
 				lex_state = lex_states::LEX_OPERATOR;
 				continue;
 			}
@@ -408,6 +413,26 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 
 void amanises::Lexer::handle_comments(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
 {
+	clear_token_buffer(tok_buf);
+
+	while (idx < content.length())
+	{
+
+		if (content[idx] == '*' && LexerHelper::peek_ahead(content, idx, '/'))
+		{
+			idx += 2;
+			break;
+		}
+		else if (content[idx] == '\n')
+		{
+			idx++;
+			break;
+		}
+
+		idx++;
+	}
+
+	lex_state = lex_states::LEX_COMMENTS;
 }
 
 void amanises::Lexer::handle_white_space(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)

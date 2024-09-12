@@ -1,4 +1,4 @@
-#include "lexHelper.hpp"
+#include "lHelper.hpp"
 
 std::string amanises::LexerHelper::tok_kind_to_str(const token_kind kind)
 {

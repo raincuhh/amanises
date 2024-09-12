@@ -9,6 +9,7 @@
 #include "../../src/logger.hpp"
 #include "../../src/lexer/token.hpp"
 #include "../../src/lexer/lexer.hpp"
+#include "../../src/lexer/lHelper.hpp"
 
 namespace amanises
 {
@@ -21,7 +22,6 @@ namespace amanises
 
 	private:
 		Logger* m_logger; 
-		std::vector<Token> m_cur_src_tok_list;
 	};
 
 }

@@ -1,19 +1,19 @@
 #pragma once
-/*
+
 
 namespace amanises
 {
 	class BaseExprAst
 	{
 	public:
-		virtual ~ExprAst() = default;
+		virtual ~BaseExprAst() = default;
 
 	};
 
 	class NumExprAst : public BaseExprAst
 	{
 	public:
-		NumExprAst(double val) : val(val) {}
+		NumExprAst(double val);
 
 	private:
 		double val;
@@ -21,4 +21,3 @@ namespace amanises
 
 
 }
-*/
