@@ -15,10 +15,8 @@
 #include "logger.hpp"
 #include "compilerSetup.hpp"
 
-namespace amanises
-{
-	class CompilerPipeline
-	{
+namespace amanises {
+	class CompilerPipeline {
 	public:
 
 		CompilerPipeline(Logger* logger);

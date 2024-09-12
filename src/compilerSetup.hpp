@@ -16,10 +16,8 @@
 #include "logger.hpp"
 
 
-namespace amanises
-{
-	class CompilerSetup 
-	{
+namespace amanises {
+	class CompilerSetup {
 	public:
 		CompilerSetup(Logger* logger, Lexer* lexer, Parser* parser);
 
@@ -39,5 +37,3 @@ namespace amanises
 		std::string get_file_name_without_suffix(const std::string& file_path);
 	};
 }
-
-

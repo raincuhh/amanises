@@ -16,14 +16,11 @@
 
 //context for the semantic expression checking later on
 
-namespace amanises
-{
-	class Lexer
-	{
+namespace amanises {
+	class Lexer {
 	public:
 
-		enum class lex_states
-		{
+		enum class lex_states {
 			LEX_INITIAL = 0,
 			LEX_OPERATOR,
 			LEX_PUNCTUATION,

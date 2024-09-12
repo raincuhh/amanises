@@ -1,9 +1,7 @@
 #include "lHelper.hpp"
 
-std::string amanises::LexerHelper::tok_kind_to_str(const token_kind kind)
-{
-	switch (kind)
-	{
+std::string amanises::LexerHelper::tok_kind_to_str(const token_kind kind) {
+	switch (kind) {
 		// reserved keywords
 
 	case token_kind::TOK_IF:               return "IF";
@@ -126,28 +124,23 @@ std::string amanises::LexerHelper::tok_kind_to_str(const token_kind kind)
 	}
 }
 
-void amanises::LexerHelper::print_tokens_verbose(std::vector<Token>& tok_list)
-{
+void amanises::LexerHelper::print_tokens_verbose(std::vector<Token>& tok_list) {
 	if (tok_list.empty()) return;
 
-	for (Token& token : tok_list)
-	{
+	for (Token& token : tok_list) {
 		std::cout << token_to_str_verbose(&token) << std::endl;
 	}
 }
 
-void amanises::LexerHelper::print_tokens_non_verbose(std::vector<Token>& tok_list)
-{
+void amanises::LexerHelper::print_tokens_non_verbose(std::vector<Token>& tok_list) {
 	if (tok_list.empty()) return;
 
-	for (Token& token : tok_list)
-	{
+	for (Token& token : tok_list) {
 		std::cout << token_to_str_non_verbose(&token) << std::endl;
 	}
 }
 
-std::string amanises::LexerHelper::token_to_str_verbose(Token* token)
-{
+std::string amanises::LexerHelper::token_to_str_verbose(Token* token) {
 	const std::string tok_kind = tok_kind_to_str(token->kind);
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
@@ -160,8 +153,7 @@ std::string amanises::LexerHelper::token_to_str_verbose(Token* token)
 	return tok_template;
 }
 
-std::string amanises::LexerHelper::token_to_str_non_verbose(Token* token)
-{
+std::string amanises::LexerHelper::token_to_str_non_verbose(Token* token) {
 	const std::string tok_kind = tok_kind_to_str(token->kind);
 	std::string tok_val = token->val.has_value() ? token->val.value() : "null";
 
@@ -172,19 +164,15 @@ std::string amanises::LexerHelper::token_to_str_non_verbose(Token* token)
 	return tok_template;
 }
 
-bool amanises::LexerHelper::peek_ahead(const std::string_view& content, size_t& idx, char to_check)
-{
-	if (idx + 1 < content.size() && content[idx + 1] == to_check)
-	{
+bool amanises::LexerHelper::peek_ahead(const std::string_view& content, size_t& idx, char to_check) {
+	if (idx + 1 < content.size() && content[idx + 1] == to_check) {
 		return true;
 	}
 	return false;
 }
 
-bool amanises::LexerHelper::is_chunk_buf_boundary_char(char c)
-{
-	switch (c)
-	{
+bool amanises::LexerHelper::is_chunk_buf_boundary_char(char c) {
+	switch (c) {
 	case '\n':
 	case '}':
 	case '{':
@@ -195,10 +183,8 @@ bool amanises::LexerHelper::is_chunk_buf_boundary_char(char c)
 	}
 }
 
-bool amanises::LexerHelper::is_space(char c)
-{
-	switch (c)
-	{
+bool amanises::LexerHelper::is_space(char c) {
+	switch (c) {
 	case ' ':
 	case '\t':
 	case '\r':
@@ -209,59 +195,47 @@ bool amanises::LexerHelper::is_space(char c)
 	}
 }
 
-bool amanises::LexerHelper::is_preproc_start(char c)
-{
+bool amanises::LexerHelper::is_preproc_start(char c) {
 	return c == '#';
 }
 
-bool amanises::LexerHelper::is_alpha(char c)
-{
+bool amanises::LexerHelper::is_alpha(char c) {
 	return std::isalpha(static_cast<unsigned char>(c));
 }
 
-bool amanises::LexerHelper::is_alpha_num(char c)
-{
+bool amanises::LexerHelper::is_alpha_num(char c) {
 	return std::isalnum(static_cast<unsigned char>(c));
 }
 
-bool amanises::LexerHelper::is_digit(char c)
-{
+bool amanises::LexerHelper::is_digit(char c) {
 	return std::isdigit(static_cast<unsigned char>(c));
 }
 
-bool amanises::LexerHelper::is_operator(const std::string_view& content, size_t& idx)
-{
+bool amanises::LexerHelper::is_operator(const std::string_view& content, size_t& idx) {
 	char c = content[idx];
 
-	switch (c)
-	{
+	switch (c) {
 	case '+':
-		if (peek_ahead(content, idx, '+'))
-		{
+		if (peek_ahead(content, idx, '+')) {
 			return true;
 		}
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
 		return true;
 	case '-':
-		if (peek_ahead(content, idx, '-'))
-		{
+		if (peek_ahead(content, idx, '-')) {
 			return true;
 		}
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
-		if (peek_ahead(content, idx, '>'))
-		{
+		if (peek_ahead(content, idx, '>')) {
 			return true;
 		}
 		return true;
 	case '*':
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
 		return true;
@@ -269,39 +243,32 @@ bool amanises::LexerHelper::is_operator(const std::string_view& content, size_t&
 	case '%':
 		return true;
 	case '=':
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
 		return true;
 	case '!':
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
 		return true;
 	case '<':
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
-
 		return true;
 	case '>':
-		if (peek_ahead(content, idx, '='))
-		{
+		if (peek_ahead(content, idx, '=')) {
 			return true;
 		}
 		return true;
 	case '&':
-		if (peek_ahead(content, idx, '&'))
-		{
+		if (peek_ahead(content, idx, '&')) {
 			return true;
 		}
 		return true;
 	case '|':
-		if (peek_ahead(content, idx, '|'))
-		{
+		if (peek_ahead(content, idx, '|')) {
 			return true;
 		}
 		return true;
@@ -310,10 +277,8 @@ bool amanises::LexerHelper::is_operator(const std::string_view& content, size_t&
 	}
 }
 
-bool amanises::LexerHelper::is_punctuator(char c)
-{
-	switch (c)
-	{
+bool amanises::LexerHelper::is_punctuator(char c) {
+	switch (c) {
 	case ';':
 	case ':':
 	case '.':
@@ -330,16 +295,14 @@ bool amanises::LexerHelper::is_punctuator(char c)
 	}
 }
 
-bool amanises::LexerHelper::is_identifier_start(char c)
-{
+bool amanises::LexerHelper::is_identifier_start(char c) {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
 		|| c == '_'
 		|| (c >= 128);
 }
 
-bool amanises::LexerHelper::is_identifier(char c)
-{
+bool amanises::LexerHelper::is_identifier(char c) {
 	return (c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
 		|| (c >= '0' && c <= '9')
@@ -347,25 +310,21 @@ bool amanises::LexerHelper::is_identifier(char c)
 		|| (c >= 128);
 }
 
-bool amanises::LexerHelper::is_literal_start(char c)
-{
+bool amanises::LexerHelper::is_literal_start(char c) {
 	return (is_digit(c) || c == '"');
 }
 
-bool amanises::LexerHelper::is_literal(char c)
-{
+bool amanises::LexerHelper::is_literal(char c) {
 	// identifier chars can be in stuff like strings etc.
 	return (is_digit(c) || c == '.' || is_identifier(c));
 }
 
-std::string amanises::LexerHelper::trim_str(const std::string& str)
-{
+std::string amanises::LexerHelper::trim_str(const std::string& str) {
 	auto start = str.find_first_not_of(" \t\n\r\f\v");
 	auto end = str.find_last_not_of(" \t\n\r\f\v");
 	return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }
 
-std::string amanises::LexerHelper::trim_white_space_str(std::string& str)
-{
+std::string amanises::LexerHelper::trim_white_space_str(std::string& str) {
 	return std::string();
 }

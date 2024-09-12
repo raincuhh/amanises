@@ -3,33 +3,28 @@
 amanises::CompilerSetup::CompilerSetup(Logger* logger, Lexer* lexer, Parser* parser) :
 	m_logger(logger),
 	m_lexer(lexer),
-	m_parser(parser)
-{
+	m_parser(parser) {
 }
 
-bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::string& src_name, std::vector<Token>& src_tok_list)
-{
+bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::string& src_name, std::vector<Token>& src_tok_list) {
 	m_logger->log(log_type::INFO, "Lexing process started for " + std::string(src_path));
 
 	// verify
-	if (!verify_opening_file_path(src_path))
-	{
+	if (!verify_opening_file_path(src_path)) {
 		m_logger->log(log_type::ERROR, std::string("File path verification failed for: ") + src_path);
 		return false;
 	}
 
 	// read file
 	std::string src = read_file(src_path);
-	if (src.empty())
-	{
+	if (src.empty()) {
 		m_logger->log(log_type::ERROR, std::string("Failed to read or empty file: ") + src_path);
 		return false;
 	}
 
 	// get file name
 	src_name = get_file_name_with_suffix(src_path);
-	if (src_name.empty())
-	{
+	if (src_name.empty()) {
 		m_logger->log(log_type::ERROR, "Unable to determine file name for: " + std::string(src_path));
 		return false;
 	}
@@ -46,15 +41,10 @@ bool amanises::CompilerSetup::process_file_for_lexer(const char* src_path, std::
 	return true;
 }
 
-bool amanises::CompilerSetup::process_tok_list_for_parser(const char* src_path, const std::string& src_name, std::vector<Token>& src_tok_list)
-{
+bool amanises::CompilerSetup::process_tok_list_for_parser(const char* src_path, const std::string& src_name, std::vector<Token>& src_tok_list) {
 	m_logger->log(log_type::INFO, "Parsing process started for " + std::string(src_path));
 
-	// TODO: implement parsing 
-	// RMBR: things that change need the mutable prefix cause this is a const method
-
 	m_parser->parse_token_list(std::move(src_tok_list));
-	
 
 	m_logger->log(log_type::INFO, "Parsing process started for " + std::string(src_path));
 	return true;
@@ -62,11 +52,9 @@ bool amanises::CompilerSetup::process_tok_list_for_parser(const char* src_path, 
 
 
 
-std::string amanises::CompilerSetup::read_file(const std::string& file_path)
-{
+std::string amanises::CompilerSetup::read_file(const std::string& file_path) {
 	std::fstream input(file_path, std::ios::in);
-	if (!input)
-	{
+	if (!input) {
 		std::cerr << "Error: Unable to open file " << file_path << std::endl;
 	}
 
@@ -77,29 +65,24 @@ std::string amanises::CompilerSetup::read_file(const std::string& file_path)
 	return c_stream.str();
 }
 
-bool amanises::CompilerSetup::verify_opening_file_path(const char* file_path)
-{
+bool amanises::CompilerSetup::verify_opening_file_path(const char* file_path) {
 	std::fstream file(file_path);
-	if (!file.is_open())
-	{
+	if (!file.is_open()) {
 		return false;
 	}
 	return true;
 }
 
-std::string amanises::CompilerSetup::get_file_name_with_suffix(const std::string& file_path)
-{
+std::string amanises::CompilerSetup::get_file_name_with_suffix(const std::string& file_path) {
 	return file_path.substr(file_path.find_last_of("//\\") + 1);
 }
 
-std::string amanises::CompilerSetup::get_file_name_without_suffix(const std::string& file_path)
-{
+std::string amanises::CompilerSetup::get_file_name_without_suffix(const std::string& file_path) {
 	std::string file_name = get_file_name_with_suffix(file_path);
 
 	size_t last_dot = file_name.find_last_of('.');
 
-	if (last_dot != std::string::npos)
-	{
+	if (last_dot != std::string::npos) {
 		return file_name.substr(0, last_dot);
 	}
 

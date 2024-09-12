@@ -11,10 +11,8 @@
 #include "../../src/lexer/lexer.hpp"
 #include "../../src/lexer/lHelper.hpp"
 
-namespace amanises
-{
-	class Parser
-	{
+namespace amanises {
+	class Parser {
 	public:
 		Parser(Logger* logger);
 		

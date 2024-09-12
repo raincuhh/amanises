@@ -6,10 +6,8 @@
 
 #include "token.hpp"
 
-namespace amanises
-{
-	class LexerHelper
-	{
+namespace amanises {
+	class LexerHelper {
 	public:
 		static inline std::string tok_kind_to_str(token_kind kind);
 

@@ -1,10 +1,8 @@
 #pragma once
 
-namespace amanises
-{
+namespace amanises {
 	// lexer error
-	class LError
-	{
+	class LError {
 	public:
 		LError();
 		~LError();

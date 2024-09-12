@@ -5,8 +5,7 @@
 #include <memory>
 #include <string>
 
-enum class ErrorCode
-{
+enum class ErrorCode {
 	SUCCESS = 0,
 	SYNTAX_ERROR,
 	SEMANTIC_ERROR,
@@ -15,17 +14,14 @@ enum class ErrorCode
 	UNKNOWN_ERROR
 };
 
-enum class ErrorType
-{
+enum class ErrorType {
 	COMPILER_ERROR = 0,
 	SYNTAX_ERROR,
 	SEMANTIC_ERROR
 };
 
-namespace amanises
-{
-	class CompilerError
-	{
+namespace amanises {
+	class CompilerError {
 	public:
 		CompilerError(ErrorCode code, const std::string& msg);
 		virtual ~CompilerError() = default;
@@ -39,8 +35,7 @@ namespace amanises
 		ErrorCode mErrorCode;
 	};
 
-	class SyntaxError : public CompilerError
-	{
+	class SyntaxError : public CompilerError {
 	public:
 		SyntaxError(const std::string& msg, int line);
 
@@ -51,8 +46,7 @@ namespace amanises
 		int mLine;
 	};
 
-	class SemanticError : public CompilerError
-	{
+	class SemanticError : public CompilerError {
 	public:
 		SemanticError(const std::string& msg, const std::string& context);
 

@@ -10,11 +10,8 @@
 #include "compilerPipeline.hpp"
 #include "logger.hpp"
 
-namespace amanises
-{
-
-	class Driver
-	{
+namespace amanises {
+	class Driver {
 	public:
 		using CompilerPipeline = amanises::CompilerPipeline;
 		using Logger = amanises::Logger;

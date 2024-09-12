@@ -4,14 +4,12 @@ amanises::Lexer::Lexer(Logger* logger) :
 	m_logger(logger),
 	m_cur_line(),
 	m_cur_col(),
-	m_tok_map()
-{
+	m_tok_map() {
 	init_token_map();
 }
 
 // responsible for tokenizing a specific source file.
-std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
-{
+std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src) {
 	std::vector<Token> file_tok_list;
 	const size_t buf_size = 8192; // TODO: might eventually make the BUFFER_SIZE be dynamically set between 8kb and 16kb
 	size_t line = 1;
@@ -24,8 +22,7 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 
 	// splitting the source into chunks of 8192
 	std::vector<std::string> chunk_bufs = split_to_chunk_buffers(std::move(src), buf_size);
-	for (const std::string& buf : chunk_bufs)
-	{
+	for (const std::string& buf : chunk_bufs) {
 		// tokenize to buf token list, and move it to the full token list
 		std::vector<Token> buf_tok_list;
 		tokenize(buf, buf_tok_list);
@@ -39,13 +36,11 @@ std::vector<Token> amanises::Lexer::tokenize_source_file(std::string src)
 	return file_tok_list;
 }
 
-void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok_list) {
 	lex_states lex_state = lex_states::LEX_INITIAL;
 	std::string tok_buf;
 
-	for (size_t idx = 0; idx < content.length();)
-	{
+	for (size_t idx = 0; idx < content.length();) {
 		Token tok = get_next_token(content, idx, lex_state, tok_buf, tok_list);
 
 		if (!tok_buf.empty()) {
@@ -57,52 +52,41 @@ void amanises::Lexer::tokenize(std::string_view content, std::vector<Token>& tok
 	}
 }
 
-Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list)
-{
-	while (idx < content.length())
-	{
+Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list) {
+	while (idx < content.length()) {
 		char c = content[idx];
 
-		switch (lex_state)
-		{
+		switch (lex_state) {
 		case lex_states::LEX_INITIAL:
-			if (LexerHelper::is_space(c))
-			{
+			if (LexerHelper::is_space(c)) {
 				lex_state = lex_states::LEX_WHITE_SPACE;
 				break;
 			}
-			else if (LexerHelper::is_identifier_start(c))
-			{
+			else if (LexerHelper::is_identifier_start(c)) {
 				lex_state = lex_states::LEX_IDENTIFIER;
 				continue;
 			}
-			else if (LexerHelper::is_literal_start(c))
-			{
+			else if (LexerHelper::is_literal_start(c)) {
 				lex_state = lex_states::LEX_LITERAL;
 				continue;
 			}
-			else if (LexerHelper::is_operator(content, idx))
-			{
-				if (LexerHelper::peek_ahead(content, idx, '*') || LexerHelper::peek_ahead(content, idx, '/'))
-				{
+			else if (LexerHelper::is_operator(content, idx)) {
+				if (LexerHelper::peek_ahead(content, idx, '*') || LexerHelper::peek_ahead(content, idx, '/')) {
 					lex_state = lex_states::LEX_COMMENTS;
 					continue;
 				}
 				lex_state = lex_states::LEX_OPERATOR;
 				continue;
 			}
-			else if (LexerHelper::is_punctuator(c))
-			{
+			else if (LexerHelper::is_punctuator(c)) {
 				lex_state = lex_states::LEX_PUNCTUATION;
 				continue;
 			}
-			else if (LexerHelper::is_preproc_start(c))
-			{
+			else if (LexerHelper::is_preproc_start(c)) {
 				lex_state = lex_states::LEX_PREPROC;
 				continue;
 			}
-			else
-			{
+			else {
 				lex_state = lex_states::LEX_ERROR;
 				continue;
 			}
@@ -134,18 +118,15 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 	}
 }
 
-token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
-{
+token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf) {
 	tok_buf = LexerHelper::trim_str(tok_buf);
 
 	auto it = m_tok_map.find(tok_buf);
 
-	if (it != m_tok_map.end())
-	{
+	if (it != m_tok_map.end()) {
 		return it->second; 
 	}
-	if (it == m_tok_map.end())
-	{
+	if (it == m_tok_map.end()) {
 		return token_kind::TOK_IDENTIFIER;
 	}
 	else {
@@ -153,8 +134,7 @@ token_kind amanises::Lexer::determine_tok_kind(std::string& tok_buf)
 	}
 }
 
-token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf)
-{
+token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf) {
 	// string literal
 	if (!tok_buf.empty() && tok_buf.front() == '"' && tok_buf.back() == '"') {
 		return token_kind::TOK_STRING_LIT;
@@ -176,8 +156,7 @@ token_kind amanises::Lexer::determine_literal_tok_kind(std::string& tok_buf)
 	return token_kind::TOK_ERROR;
 }
 
-std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::string& content, size_t max_chunk_size)
-{
+std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::string& content, size_t max_chunk_size) {
 	// TODO: tracking syntax boundaries. as in open and closed delimiters.
 	// TODO: tokenization marks kinda
 	// dont know if it is actually something i need to solve, just test this later
@@ -204,8 +183,7 @@ std::vector<std::string> amanises::Lexer::split_to_chunk_buffers(const std::stri
 	return chunks;
 }
 
-void amanises::Lexer::init_token_map()
-{
+void amanises::Lexer::init_token_map() {
 	m_tok_map = {
 		// punctuation
 		{ ";", token_kind::TOK_SEMICOLON },
@@ -300,27 +278,23 @@ void amanises::Lexer::init_token_map()
 	};
 }
 
-void amanises::Lexer::update_line_col(const std::string_view& content, size_t& idx)
-{
+void amanises::Lexer::update_line_col(const std::string_view& content, size_t& idx) {
 	if (content[idx] == '\n') {
 		m_cur_line++;
 		m_cur_col = 0;
 	}
-	else 
-	{
+	else  {
 		m_cur_col++;
 	}
 }
 
-void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	update_line_col(content, idx);
 	idx++;
 
-	while (idx < content.length() && LexerHelper::is_alpha_num(content[idx]))
-	{
+	while (idx < content.length() && LexerHelper::is_alpha_num(content[idx])) {
 		tok_buf.push_back(content[idx]);
 		update_line_col(content, idx);
 		idx++;
@@ -329,8 +303,7 @@ void amanises::Lexer::accumulate_preproc_token(const std::string_view& content, 
 	lex_state = lex_states::LEX_INITIAL;
 }
 
-void amanises::Lexer::accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::accumulate_operator_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	update_line_col(content, idx);
@@ -345,25 +318,22 @@ void amanises::Lexer::accumulate_operator_token(const std::string_view& content,
 	lex_state = lex_states::LEX_INITIAL;
 }
 
-void amanises::Lexer::accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::accumulate_punctuation_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	update_line_col(content, idx);
-	idx++;
 
+	idx++;
 	lex_state = lex_states::LEX_INITIAL;
 }
 
-void amanises::Lexer::accumulate_identifier_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::accumulate_identifier_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	update_line_col(content, idx);
 	idx++;
 
-	while (idx < content.length() && LexerHelper::is_identifier(content[idx]))
-	{
+	while (idx < content.length() && LexerHelper::is_identifier(content[idx])) {
 		tok_buf.push_back(content[idx]);
 		update_line_col(content, idx);
 		idx++;
@@ -372,8 +342,7 @@ void amanises::Lexer::accumulate_identifier_token(const std::string_view& conten
 	lex_state = lex_states::LEX_INITIAL;
 }
 
-void amanises::Lexer::accumulate_literal_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::accumulate_literal_token(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 	tok_buf.push_back(c);
 	update_line_col(content, idx);
@@ -381,66 +350,54 @@ void amanises::Lexer::accumulate_literal_token(const std::string_view& content, 
 
 	bool is_string_literal = (c == '"');
 
-	while (idx < content.length())
-	{
+	while (idx < content.length()) {
 		c = content[idx];
 
-		if (is_string_literal)
-		{
+		if (is_string_literal) {
 			tok_buf.push_back(c);
 			update_line_col(content, idx);
 			idx++;
 
-			if (c == '"')
-			{
+			if (c == '"') {
 				break;
 			}
 		}
-		else if (LexerHelper::is_literal(c))
-		{
+		else if (LexerHelper::is_literal(c)) {
 			tok_buf.push_back(c);
 			update_line_col(content, idx);
 			idx++;
 		}
-		else
-		{
+		else {
 			break;
 		}
 	}
-	//std::cout << "Next Character: " << content[idx] << " at Index: " << idx << std::endl;
+
 	lex_state = lex_states::LEX_INITIAL;
 }
 
-void amanises::Lexer::handle_comments(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
+void amanises::Lexer::handle_comments(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
 	clear_token_buffer(tok_buf);
 
-	while (idx < content.length())
-	{
-
-		if (content[idx] == '*' && LexerHelper::peek_ahead(content, idx, '/'))
-		{
+	while (idx < content.length()) {
+		if (content[idx] == '*' && LexerHelper::peek_ahead(content, idx, '/')) {
 			idx += 2;
 			break;
 		}
-		else if (content[idx] == '\n')
-		{
+		else if (content[idx] == '\n') {
 			idx++;
 			break;
 		}
-
 		idx++;
 	}
 
 	lex_state = lex_states::LEX_COMMENTS;
 }
 
-void amanises::Lexer::handle_white_space(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list)
-{
-	while (idx < content.length() && LexerHelper::is_space(content[idx]))
-	{
+void amanises::Lexer::handle_white_space(const std::string_view& content, size_t& idx, char& c, std::string& tok_buf, lex_states& lex_state, std::vector<Token>& tok_list) {
+	while (idx < content.length() && LexerHelper::is_space(content[idx])) {
 		update_line_col(content, idx);
 		idx++;
 	}
+
 	lex_state = lex_states::LEX_INITIAL;
 }

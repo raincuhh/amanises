@@ -133,8 +133,7 @@ enum class token_kind {
 	TOK_ERROR
 };
 
-struct Token
-{
+struct Token {
 	token_kind kind = token_kind::TOK_EOF;
 	std::optional<std::string> val = std::nullopt;
 	size_t line = 0;

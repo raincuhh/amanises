@@ -1,17 +1,15 @@
 #include "logger.hpp"
 
 amanises::Logger::Logger(std::string& file_path) :
-	m_log_file_path(file_path)
-{
+	m_log_file_path(file_path) {
+
 	log_file.open(file_path, std::ios::app);
-	if (!log_file.is_open())
-	{
+	if (!log_file.is_open()) {
 		log(log_type::ERROR, std::string("Failed opening logfile: ") + file_path);
 	}
 }
 
-void amanises::Logger::log(log_type type, std::string msg)
-{
+void amanises::Logger::log(log_type type, std::string msg) {
 	std::string timestamp = get_log_time_stamp();
 	std::ostringstream entry;
 
@@ -25,8 +23,7 @@ void amanises::Logger::log(log_type type, std::string msg)
 
 
 	// flushing the file after log
-	if (log_file.is_open())
-	{
+	if (log_file.is_open()) {
 		entry
 			<< std::endl;
 		log_file << entry.str();
@@ -34,17 +31,14 @@ void amanises::Logger::log(log_type type, std::string msg)
 	}
 }
 
-bool amanises::Logger::clear_logs()
-{
-	if (remove(m_log_file_path.c_str()))
-	{
+bool amanises::Logger::clear_logs() {
+	if (remove(m_log_file_path.c_str())) {
 		return true;
 	}
 	return false;
 }
 
-std::string amanises::Logger::get_log_time_stamp()
-{
+std::string amanises::Logger::get_log_time_stamp() {
 	time_t now = time(0);
 	tm* local_time = localtime(&now);
 
@@ -54,10 +48,8 @@ std::string amanises::Logger::get_log_time_stamp()
 	return static_cast<std::string>(timestamp);
 }
 
-std::string amanises::Logger::log_type_to_str(log_type type)
-{
-	switch (type)
-	{
+std::string amanises::Logger::log_type_to_str(log_type type) {
+	switch (type) {
 	case log_type::DEBUG:	return "DEBUG";
 	case log_type::INFO:		return "INFO";
 	case log_type::WARNING:  return "WARNING";

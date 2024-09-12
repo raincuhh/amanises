@@ -6,8 +6,7 @@
 #include <sstream>
 #include <ctime> 
 
-enum class log_type
-{
+enum class log_type {
 	DEBUG, 
 	INFO, 
 	WARNING, 
@@ -16,11 +15,8 @@ enum class log_type
 	EXCEPTION
 };
 
-
-namespace amanises
-{
-	class Logger
-	{
+namespace amanises {
+	class Logger {
 	public:
 		Logger(std::string& file_path);
 		~Logger() { if (log_file) log_file.close(); };
