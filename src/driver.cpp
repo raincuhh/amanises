@@ -21,6 +21,7 @@ bool amanises::Driver::driver_init(int argc, char* argv[]) {
 bool amanises::Driver::validate_usage_arguments(int argc, char* argv[], Logger* m_logger) {
 	if (argc < 2) {
 		m_logger->log(log_type::CRITICAL, std::string("Incorrect usage. Correct usage...") + argv[0] + std::string(" <source.ama>"));
+		usage();
 		return EXIT_FAILURE;
 	}
 	else {
@@ -55,4 +56,11 @@ bool amanises::Driver::compiler_pipeline_init(int argc, char* argv[], Logger* m_
 	m_logger->log(log_type::INFO, std::string("Amanises compilation finished."));
 	//delete m_logger;
 	return EXIT_SUCCESS;
+}
+
+void amanises::Driver::usage()
+{
+	std::cout << "Usage: [Options] <input.ama>\n";
+	std::cout << "Options: \n";
+	std::cout << "    -o <output>     must provide output path\n";
 }
