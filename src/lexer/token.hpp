@@ -104,6 +104,7 @@ enum class token_kind {
 	// operator misc
 	TOK_MEMBER_ACCESS,    // .  as in class.member
 	TOK_POINTER_ACCESS,   // -> as in classInstance->member
+	TOK_L_ARROW,          // -> changed pointer access to more generalized L_ARROW because -> is used for multiple things
 	TOK_SCOPE,            // :: as in stuff like namespace::class::member
 
 	// punctuation

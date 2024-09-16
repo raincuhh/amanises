@@ -9,7 +9,7 @@ project ("amanises")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable (amanises "src/main.cpp" "src/error.cpp" "src/logger.cpp" "src/compilerPipeline.cpp" "src/compiler/compile.cpp" "src/compiler/flowgraph.cpp" "src/compiler/codegen/assembler.cpp" "src/lexer/lHelper.cpp" "src/lexer/lexer.cpp" "src/parser/parser.cpp" "src/parser/ast.cpp" "src/driver.cpp"   "src/compilerSetup.cpp" "src/lexer/lError.cpp")
+add_executable (amanises "src/main.cpp" "src/error.cpp" "src/logger.cpp" "src/compilerPipeline.cpp" "src/compiler/compile.cpp" "src/compiler/flowgraph.cpp" "src/compiler/codegen/assembler.cpp" "src/lexer/lHelper.cpp" "src/lexer/lexer.cpp" "src/parser/parser.cpp" "src/parser/ast.cpp" "src/driver.cpp"   "src/compilerSetup.cpp" "src/lexer/lError.cpp" "src/parser/semanticAnalyzer.cpp")
 
 set_target_properties(amanises PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}

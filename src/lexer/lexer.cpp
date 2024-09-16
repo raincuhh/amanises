@@ -224,7 +224,7 @@ void amanises::Lexer::init_token_map() {
 		{ "*=", token_kind::TOK_MULTIPLY_ASSIGN },
 
 		{ ".", token_kind::TOK_MEMBER_ACCESS },
-		{ "->", token_kind::TOK_POINTER_ACCESS },
+		{ "->", token_kind::TOK_L_ARROW },
 		{ "::", token_kind::TOK_SCOPE },
 
 		// keywords
@@ -233,6 +233,7 @@ void amanises::Lexer::init_token_map() {
 		{ "for", token_kind::TOK_FOR },
 		{ "while", token_kind::TOK_WHILE },
 		{ "do", token_kind::TOK_DO },
+		{ "proc", token_kind::TOK_FUNCTION },
 		{ "return", token_kind::TOK_RETURN },
 		{ "break", token_kind::TOK_BREAK },
 		{ "continue", token_kind::TOK_CONTINUE },

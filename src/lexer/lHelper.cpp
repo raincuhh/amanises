@@ -76,6 +76,7 @@ std::string amanises::LexerHelper::tok_kind_to_str(const token_kind kind) {
 
 	case token_kind::TOK_MEMBER_ACCESS:    return "MEMBER_ACCESS";
 	case token_kind::TOK_POINTER_ACCESS:   return "POINTER_ACCESS";
+	case token_kind::TOK_L_ARROW:          return "L_ARROW";
 	case token_kind::TOK_SCOPE:            return "SCOPE";
 
 		// punctuation

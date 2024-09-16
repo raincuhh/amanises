@@ -10,6 +10,7 @@
 #include "../../src/lexer/token.hpp"
 #include "../../src/lexer/lexer.hpp"
 #include "../../src/lexer/lHelper.hpp"
+#include "ast.hpp"
 
 namespace amanises {
 	class Parser {

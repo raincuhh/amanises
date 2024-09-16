@@ -35,11 +35,10 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[]) {
 		std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
 	}
 	
-	
 	// starting the processing of src file parsing into ast
 	for (size_t i = 0; i < src_and_tok_lists.size(); i++) {
-		// passing src_path around for reference for logger
-		// on what process is starting and finishing.
+
+		// passing src_path around for reference for logging stuff.
 		const char* src_path = src_path_list[i];
 		std::string src_name = src_and_tok_lists[i].first;
 		std::vector<Token> src_tok_list = src_and_tok_lists[i].second;

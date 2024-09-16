@@ -2,9 +2,9 @@
 
 
 namespace amanises {
-	class BaseExprAst {
+	class BaseExpr {
 	public:
-		virtual ~BaseExprAst() = default;
+		virtual ~BaseExpr() = default;
 
 	};
 

@@ -26,7 +26,6 @@ namespace amanises {
 		static bool is_alpha_num(char c);
 		static bool is_digit(char c);
 
-
 		static bool is_operator(const std::string_view& content, size_t& idx);
 		static bool is_punctuator(char c);
 		static bool is_identifier_start(char c);
