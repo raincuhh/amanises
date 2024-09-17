@@ -92,10 +92,10 @@ Token amanises::Lexer::get_next_token(std::string_view content, size_t& idx, lex
 			}
 		case lex_states::LEX_OPERATOR:
 			accumulate_operator_token(content, idx, c, tok_buf, lex_state, tok_list);
-			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
+			return Token{ .kind = determine_tok_kind(tok_buf)/*, .val = tok_buf*/ };
 		case lex_states::LEX_PUNCTUATION:
 			accumulate_punctuation_token(content, idx, c, tok_buf, lex_state, tok_list);
-			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };
+			return Token{ .kind = determine_tok_kind(tok_buf)/*, .val = tok_buf*/ };
 		case lex_states::LEX_IDENTIFIER:
 			accumulate_identifier_token(content, idx, c, tok_buf, lex_state, tok_list);
 			return Token{ .kind = determine_tok_kind(tok_buf), .val = tok_buf };

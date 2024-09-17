@@ -36,6 +36,7 @@ namespace amanises {
 		std::vector<Token> tokenize_source_file(std::string source);
 
 	private:
+		// compiler = lexer -> parser -> semantic analysis -> intermediate representation -> optimisation -> codegeneration -> backend
 		Logger* m_logger;
 		std::unordered_map<std::string, token_kind> m_tok_map;
 
@@ -44,6 +45,7 @@ namespace amanises {
 
 		void tokenize(std::string_view content, std::vector<Token>& tok_list);
 		Token get_next_token(std::string_view content, size_t& idx, lex_states& lex_state, std::string& tok_buf, std::vector<Token>& tok_list);
+		
 		token_kind determine_tok_kind(std::string& tok_buf);
 		token_kind determine_literal_tok_kind(std::string& tok_buf);
 
