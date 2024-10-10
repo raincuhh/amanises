@@ -36,10 +36,8 @@ namespace amanises {
 		std::vector<Token> tokenize_source_file(std::string source);
 
 	private:
-		// compiler = lexer -> parser -> semantic analysis -> intermediate representation -> optimisation -> codegeneration -> backend
 		Logger* m_logger;
 		std::unordered_map<std::string, token_kind> m_tok_map;
-
 		size_t m_cur_line;
 		size_t m_cur_col;
 

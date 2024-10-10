@@ -1,5 +1,8 @@
 #include "driver.hpp"
 
+using CompilerPipeline = amanises::CompilerPipeline;
+using Logger = amanises::Logger;
+
 amanises::Driver::Driver() {
 }
 
@@ -53,6 +56,5 @@ bool amanises::Driver::compiler_pipeline_init(int argc, char* argv[], Logger* m_
 	}
 
 	m_logger->log(log_type::INFO, std::string("Amanises compilation finished."));
-	//delete m_logger;
 	return EXIT_SUCCESS;
 }

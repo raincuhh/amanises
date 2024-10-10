@@ -36,6 +36,8 @@ namespace amanises {
 		static std::string trim_str(const std::string& str);
 		static std::string trim_white_space_str(std::string& str);
 
+		static void debug_print_src_and_tok_list(std::vector<std::pair<std::string, std::vector<Token>>> tok_list);
+
 	private:
 
 	};

@@ -50,8 +50,6 @@ bool amanises::CompilerSetup::process_tok_list_for_parser(const char* src_path, 
 	return true;
 }
 
-
-
 std::string amanises::CompilerSetup::read_file(const std::string& file_path) {
 	std::fstream input(file_path, std::ios::in);
 	if (!input) {

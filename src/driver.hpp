@@ -13,8 +13,6 @@
 namespace amanises {
 	class Driver {
 	public:
-		using CompilerPipeline = amanises::CompilerPipeline;
-		using Logger = amanises::Logger;
 		Driver();
 		bool driver_init(int argc, char* argv[]);
 	private:

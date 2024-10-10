@@ -329,3 +329,14 @@ std::string amanises::LexerHelper::trim_str(const std::string& str) {
 std::string amanises::LexerHelper::trim_white_space_str(std::string& str) {
 	return std::string();
 }
+
+void amanises::LexerHelper::debug_print_src_and_tok_list(std::vector<std::pair<std::string, std::vector<Token>>> src_and_tok_list) {
+	
+	for (auto& pair : src_and_tok_list) {
+		std::string src_name = pair.first;
+		std::vector<Token> tokens = pair.second;
+
+		LexerHelper::print_tokens_non_verbose(tokens);
+		std::cout << "total tok from src: `" << tokens.size() << "`" << std::endl;
+	}
+}
