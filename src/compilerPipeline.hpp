@@ -24,7 +24,7 @@ namespace amanises {
 		Logger* m_logger;
 
 		void process_source_files(int argc, char* argv[], CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list);
-		void tokenize_token_list(CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list);
+		void process_token_lists(CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list);
 	};
 }
 

@@ -19,7 +19,7 @@ void amanises::CompilerPipeline::pipeline_init(int argc, char* argv[]) {
 	LexerHelper::debug_print_src_and_tok_list(src_and_tok_lists);
 	
 	// starting the processing of src file parsing into ast
-	tokenize_token_list(compiler_setup.get(), src_and_tok_lists, src_path_list);
+	process_token_lists(compiler_setup.get(), src_and_tok_lists, src_path_list);
 }
 
 void amanises::CompilerPipeline::process_source_files(int argc, char* argv[], CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list)
@@ -38,7 +38,7 @@ void amanises::CompilerPipeline::process_source_files(int argc, char* argv[], Co
 	}
 }
 
-void amanises::CompilerPipeline::tokenize_token_list(CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list)
+void amanises::CompilerPipeline::process_token_lists(CompilerSetup* compiler_setup, std::vector<std::pair<std::string, std::vector<Token>>>& src_and_tok_lists, std::vector<const char*>& src_path_list)
 {
 	for (size_t i = 0; i < src_and_tok_lists.size(); i++) {
 
