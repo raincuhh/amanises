@@ -7,7 +7,7 @@ amanises::Driver::Driver() {
 }
 
 bool amanises::Driver::driver_init(int argc, char* argv[]) {
-	std::string log_path = "C:/dev/repos/amanises/logs/log.txt";
+	std::string log_path = "../../../log.txt";
 	std::unique_ptr<Logger> logger = std::make_unique<Logger>(log_path);
 
 	if (validate_usage_arguments(argc, argv, logger.get()) == EXIT_FAILURE) {
