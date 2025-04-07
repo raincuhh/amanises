@@ -1,8 +1,9 @@
 
-i8 a = 7 + 3 * 4;
+i8 a = 7 + 3 * 4; 
 
 
-/*
+
+
 proc main() -> i8 {
 	printl("Hello World!"); 
 	// test comment line
@@ -10,4 +11,3 @@ proc main() -> i8 {
 
 	return 0;
 }
-*/
